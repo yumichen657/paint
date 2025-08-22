@@ -2,22 +2,77 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <title>溢彩畫 - 選關卡</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>溢彩畫遊戲</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>選擇關卡</h1>
-  <div>
-    <a href="game.html?level=1">第 1 關</a>
-    <a href="game.html?level=2">第 2 關</a>
-    <a href="game.html?level=3">第 3 關</a>
-    <a href="game.html?level=4">第 4 關</a>
-    <a href="game.html?level=5">第 5 關</a>
-    <a href="game.html?level=6">第 6 關</a>
-    <a href="game.html?level=7">第 7 關</a>
-    <a href="game.html?level=8">第 8 關</a>
-    <a href="game.html?level=9">第 9 關</a>
-    <a href="game.html?level=10">第 10 關</a>
+  <h1>溢彩畫遊戲</h1>
+
+  <!-- 關卡選單 -->
+  <div id="levelSelect">
+    <p>選擇關卡：</p>
+    <div id="levelButtons"></div>
   </div>
+
+  <!-- 遊戲資訊 -->
+  <div id="gameContainer" style="display:none;">
+    <div id="info">
+      目標顏色: <span id="targetLabel"></span> | 剩餘步數: <span id="movesLeft"></span>
+    </div>
+
+    <div id="palette">
+      <button class="color-btn" data-color="red" style="background:red;"></button>
+      <button class="color-btn" data-color="blue" style="background:blue;"></button>
+      <button class="color-btn" data-color="green" style="background:green;"></button>
+      <button class="color-btn" data-color="yellow" style="background:yellow;"></button>
+    </div>
+
+    <div id="board"></div>
+
+    <button id="helpBtn">說明</button>
+    <div id="tutorial" style="display:none;">
+      <p>點擊顏色改變區域顏色，完成目標顏色即可過關</p>
+      <button id="tutorialOk">開始遊戲</button>
+    </div>
+  </div>
+
+  <!-- 共用遊戲邏輯 -->
+  <script src="script.js"></script>
+
+  <!-- 載入關卡資料 -->
+  <script src="levels/level1.js"></script>
+  <script src="levels/level2.js"></script>
+  <script src="levels/level3.js"></script>
+  <script src="levels/level4.js"></script>
+  <script src="levels/level5.js"></script>
+  <script src="levels/level6.js"></script>
+  <script src="levels/level7.js"></script>
+  <script src="levels/level8.js"></script>
+  <script src="levels/level9.js"></script>
+  <script src="levels/level10.js"></script>
+
+  <script>
+    const levels = [
+      level1, level2, level3, level4, level5,
+      level6, level7, level8, level9, level10
+    ];
+
+    const levelButtonsContainer = document.getElementById('levelButtons');
+    const levelSelectDiv = document.getElementById('levelSelect');
+    const gameContainer = document.getElementById('gameContainer');
+
+    // 產生按鈕
+    levels.forEach((lvl, i) => {
+      const btn = document.createElement('button');
+      btn.textContent = `第 ${i+1} 關`;
+      btn.addEventListener('click', () => {
+        levelSelectDiv.style.display = 'none';
+        gameContainer.style.display = 'block';
+        loadLevel(lvl); // 載入選擇的關卡
+      });
+      levelButtonsContainer.appendChild(btn);
+    });
+  </script>
 </body>
 </html>
