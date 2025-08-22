@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>溢彩畫 - 關卡</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="game-body">
+  <button id="helpBtn" title="教學">?</button>
+
+  <header class="game-header">
+    <h1 id="levelTitle">第 ? 關</h1>
+    <div class="status">
+      <div>目標顏色：<span id="targetLabel"></span></div>
+      <div>剩餘步數：<span id="movesLeft"></span></div>
+    </div>
+  </header>
+
+  <div id="palette" aria-label="調色盤">
+    <button class="color-btn" data-color="red" style="background:red"></button>
+    <button class="color-btn" data-color="green" style="background:green"></button>
+    <button class="color-btn" data-color="blue" style="background:blue"></button>
+    <button class="color-btn" data-color="yellow" style="background:gold"></button>
+  </div>
+
+  <div id="board"></div>
+
+  <!-- 教學 overlay（載入時會自動開） -->
+  <div id="tutorial" class="overlay" style="display:none">
+    <div class="tutorial-box">
+      <h2>新手教學</h2>
+      <p>操作說明：</p>
+      <ol>
+        <li>先點選調色盤顏色（會出現選中效果）。</li>
+        <li>再點選畫板任意色塊，該色塊相連的同色區域全部染成你選的顏色。</li>
+        <li>目標是把整個畫板變成「目標顏色」。每一關有步數限制，用完會失敗。</li>
+      </ol>
+      <div class="message">提示：灰色洞（空格）不會被染色，也會阻隔連通。</div>
+      <hr>
+      <div style="text-align:center;">
+        <button id="runDemo" class="cta">示範</button>
+        <button id="tutorialOk" class="cta">知道了，開始遊戲</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-actions">
+    <a class="soft-btn" href="index.html">返回選單</a>
+    <button id="resetBtn" class="soft-btn">重新開始</button>
+  </div>
+
+  <script src="levels.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
