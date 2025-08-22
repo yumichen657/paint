@@ -3,14 +3,12 @@ const PALETTE = ['red','green','blue','yellow'];
 
 /**
  * LEVELS:
- * - 若提供 boardData（陣列陣列），就用它
- * - 否則由 rows/cols/palette/holes/randomSeed 自動生成
+ * 每一關都使用你提供的 boardData、target、maxMoves
  */
 const LEVELS = [
   {
     id: 1,
     title: "第一關",
-    subtitle: "這麼簡單都過不了？",
     boardData: [
       ['blue','yellow','blue','yellow','blue','yellow','blue','yellow','blue','blue'],
       ['yellow','yellow','green','yellow','green','yellow','green','yellow','green','yellow'],
@@ -24,51 +22,148 @@ const LEVELS = [
     target: 'blue',
     maxMoves: 4
   },
-
-  // 後面示範幾關用自動生成，需與調色盤相同顏色
   {
     id: 2,
     title: "第二關",
-    subtitle: "要不你回家洗洗睡？",
-    rows: 10, cols: 10,
-    target: 'yellow', maxMoves: 6,
-    palette: PALETTE,
-    holes: [[3,9],[5,9]],
-    randomSeed: 2
+    boardData: [
+      ['red','red','red','red','red','red','red','red','red','red'],
+      ['red','green','green','green','green','green','green','green','green','red'],
+      ['red','green','green','green','green','green','green','green','green','red'],
+      ['red','green','green','green','green','green','green','green','green','red'],
+      ['red','green','green','green','green','green','green','green','green','red'],
+      ['red','green','green','green','green','green','green','green','green','red'],
+      ['red','red','red','red','red','red','red','red','red','red'],
+      ['red','blue','blue','blue','blue','blue','blue','blue','blue','red']
+    ],
+    target: 'blue',
+    maxMoves: 2
   },
   {
     id: 3,
     title: "第三關",
-    subtitle: "就這實力你玩個 der",
-    rows: 10, cols: 10,
-    target: 'green', maxMoves: 7,
-    palette: PALETTE,
-    holes: [[2,2],[2,7],[7,2],[7,7]],
-    randomSeed: 3
+    boardData: [
+      ['red','red','red','red','red','red','red','red','red','red'],
+      ['red','green','green','green','red','red','green','green','green','red'],
+      ['red','green','blue','green','green','green','green','blue','green','red'],
+      ['red','green','green','green','green','green','green','green','green','red'],
+      ['red','red','red','red','red','red','red','red','red','red'],
+      ['red','green','green','green','green','green','green','green','green','red'],
+      ['red','green','green','green','green','green','green','green','green','red'],
+      ['red','red','red','red','red','red','red','red','red','red']
+    ],
+    target: 'yellow',
+    maxMoves: 3
   },
   {
     id: 4,
     title: "第四關",
-    rows: 8, cols: 12,
-    target: 'red', maxMoves: 6,
-    palette: PALETTE, randomSeed: 4
+    boardData: [
+      ['red','red','red','red','red','blue','red','blue','red','blue'],
+      ['red','red','green','green','red','blue','red','blue','red','blue'],
+      ['red','green','green','green','green','green','green','green','green','green'],
+      ['yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow'],
+      ['yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow'],
+      ['red','green','green','green','green','green','green','green','green','green'],
+      ['red','red','green','green','red','blue','red','blue','red','blue'],
+      ['red','red','red','red','red','blue','red','blue','red','blue']
+    ],
+    target: 'blue',
+    maxMoves: 3
   },
   {
-    id: 5, title: "第五關", rows: 12, cols: 12, target: 'blue', maxMoves: 8, palette: PALETTE, randomSeed: 5
+    id: 5,
+    title: "第五關",
+    boardData: [
+      ['blue','yellow','blue','yellow','blue','yellow','blue','yellow','blue','yellow'],
+      ['yellow','yellow','green','yellow','green','yellow','green','yellow','green','yellow'], 
+      ['green','red','green','red','green','red','green','red','green','red'],
+      ['red','red','red','red','red','red','red','red','red','red'],
+      ['green','red','green','red','green','red','green','red','green','red'],
+      ['red','red','red','red','red','red','red','red','red','red'],
+      ['green','red','green','red','green','red','green','red','green','red'],
+      ['blue','yellow','blue','yellow','blue','yellow','blue','yellow','blue','yellow']
+    ],
+    target: 'blue',
+    maxMoves: 3
   },
   {
-    id: 6, title: "第六關", rows: 10, cols: 10, target: 'green', maxMoves: 6, palette: PALETTE, randomSeed: 6
+    id: 6,
+    title: "第六關",
+    boardData: [
+      ['blue','yellow','blue','yellow','blue','yellow','blue','yellow','blue','blue'],
+      ['yellow','yellow','green','yellow','green','yellow','green','yellow','green','yellow'],
+      ['green','red','green','red','green','red','green','red','green','red'],
+      ['red','red','red','red','red','red','red','red','red', null ],
+      ['green','red','green','red','green','red','green','red','green','red'],
+      ['red','red','red','red','red','red','red','red','red', null ],
+      ['green','red','green','red','green','red','green','red','green','red'],
+      ['blue','yellow','blue','yellow','blue','yellow','blue','yellow','blue','blue']
+    ],
+    target: 'blue',
+    maxMoves: 4
   },
   {
-    id: 7, title: "第七關", rows: 9, cols: 9, target: 'yellow', maxMoves: 5, palette: PALETTE, randomSeed: 7
+    id: 7,
+    title: "第七關",
+    boardData: [
+      ['blue','red','red','blue','red','red','blue','red','red','blue'],
+      ['green','red','red','green','red','red','green','red','red','green'],
+      ['yellow','yellow','yellow','yellow','blue','blue','yellow','yellow','yellow','yellow'],
+      ['green','red','red','green','blue','blue','green','red','red','green'],
+      ['blue','red','red','blue','blue','blue','blue','red','red','blue'],
+      ['yellow','yellow','yellow','yellow','blue','blue','yellow','yellow','yellow','yellow'],
+      ['blue','red','red','blue','red','red','blue','red','red','blue'],
+      ['green','red','red','green','red','red','green','red','red','green']
+    ],
+    target: 'blue',
+    maxMoves: 4
   },
   {
-    id: 8, title: "第八關", rows: 10, cols: 14, target: 'blue', maxMoves: 9, palette: PALETTE, randomSeed: 8
+    id: 8,
+    title: "第八關",
+    boardData: [
+      ['red','red','red','red','red','blue','red','blue','red','blue'],
+      ['red','red','green','green','red','blue','red','blue','red','blue'],
+      ['red','green','green','green','green','green','green','green','green','green'],
+      ['yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow'],
+      ['yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow'],
+      ['red','green','green','green','green','green','green','green','green','green'],
+      ['red','red','green','green','red','blue','red','blue','red','blue'],
+      ['red','red','red','red','red','blue','red','blue','red','blue']
+    ],
+    target: 'blue',
+    maxMoves: 3
   },
   {
-    id: 9, title: "第九關", rows: 10, cols: 10, target: 'red', maxMoves: 7, palette: PALETTE, randomSeed: 9
+    id: 9,
+    title: "第九關",
+    boardData: [
+      ['red','red','red','red','red','blue','red','blue','red','blue'],
+      ['red','red','green','green','red','blue','red','blue','red','blue'],
+      ['red','blue','blue','blue','blue','blue','blue','blue','blue','green'],
+      ['yellow','blue','yellow','green','yellow','yellow','yellow','yellow','blue','yellow'],
+      ['yellow','blue','yellow','green','yellow','yellow','yellow','yellow','blue','yellow'],
+      ['red','blue','blue','blue','blue','blue','blue','blue','blue','green'],
+      ['red','red','green','green','red','blue','red','blue','red','blue'],
+      ['red','red','red','red','red','blue','red','blue','red','blue']
+    ],
+    target: 'red',
+    maxMoves: 4
   },
   {
-    id: 10, title: "第十關", rows: 10, cols: 10, target: 'green', maxMoves: 7, palette: PALETTE, randomSeed: 10
+    id: 10,
+    title: "第十關",
+    boardData: [
+      ['red','red','red','red','red','blue','red','blue','red','blue'],
+      ['red','red','green','green','red','blue','red','blue','red','blue'],
+      ['red','green','green','green','green','green','green','green','green','green'],
+      [ null,'green','yellow','red','yellow','red','yellow','red','yellow','red'],
+      [ null,'green','red','yellow','red','yellow','red','yellow','red','yellow'],
+      ['red','green','green','green','green','green','green','green','green','green'],
+      ['red','red','green','green','red','blue','red','blue','red','blue'],
+      ['red','red','red','red','red','blue','red','blue','red','blue']
+    ],
+    target: 'red',
+    maxMoves: 3
   }
 ];
