@@ -1,77 +1,32 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>溢彩畫遊戲</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>溢彩畫｜選關</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <h1>溢彩畫遊戲</h1>
+<body class="menu-body">
+  <main class="menu-container">
+    <h1>溢彩畫</h1>
+    <p>點選關卡開始</p>
+    <div id="levelCards" class="levels"></div>
+    <footer class="menu-footer">沒過關我都要哭了</footer>
+  </main>
 
-  <!-- 關卡選單 -->
-  <div id="levelSelect">
-    <p>選擇關卡：</p>
-    <div id="levelButtons"></div>
-  </div>
-
-  <!-- 遊戲資訊 -->
-  <div id="gameContainer" style="display:none;">
-    <div id="info">
-      目標顏色: <span id="targetLabel"></span> | 剩餘步數: <span id="movesLeft"></span>
-    </div>
-
-    <div id="palette">
-      <button class="color-btn" data-color="red" style="background:red;"></button>
-      <button class="color-btn" data-color="blue" style="background:blue;"></button>
-      <button class="color-btn" data-color="green" style="background:green;"></button>
-      <button class="color-btn" data-color="yellow" style="background:yellow;"></button>
-    </div>
-
-    <div id="board"></div>
-
-    <button id="helpBtn">說明</button>
-    <div id="tutorial" style="display:none;">
-      <p>點擊顏色改變區域顏色，完成目標顏色即可過關</p>
-      <button id="tutorialOk">開始遊戲</button>
-    </div>
-  </div>
-
-  <!-- 共用遊戲邏輯 -->
-  <script src="script.js"></script>
-
-  <!-- 載入關卡資料 -->
-  <script src="levels/level1.js"></script>
-  <script src="levels/level2.js"></script>
-  <script src="levels/level3.js"></script>
-  <script src="levels/level4.js"></script>
-  <script src="levels/level5.js"></script>
-  <script src="levels/level6.js"></script>
-  <script src="levels/level7.js"></script>
-  <script src="levels/level8.js"></script>
-  <script src="levels/level9.js"></script>
-  <script src="levels/level10.js"></script>
-
+  <script src="levels.js"></script>
   <script>
-    const levels = [
-      level1, level2, level3, level4, level5,
-      level6, level7, level8, level9, level10
-    ];
-
-    const levelButtonsContainer = document.getElementById('levelButtons');
-    const levelSelectDiv = document.getElementById('levelSelect');
-    const gameContainer = document.getElementById('gameContainer');
-
-    // 產生按鈕
-    levels.forEach((lvl, i) => {
-      const btn = document.createElement('button');
-      btn.textContent = `第 ${i+1} 關`;
-      btn.addEventListener('click', () => {
-        levelSelectDiv.style.display = 'none';
-        gameContainer.style.display = 'block';
-        loadLevel(lvl); // 載入選擇的關卡
-      });
-      levelButtonsContainer.appendChild(btn);
+    // 依 LEVELS 自動產生卡片
+    const wrap = document.getElementById('levelCards');
+    LEVELS.forEach(lv => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.onclick = () => location.href = `game.html?level=${lv.id}`;
+      card.innerHTML = `
+        <h3>${lv.title}</h3>
+        <p>${lv.subtitle || '加油！'}</p>
+      `;
+      wrap.appendChild(card);
     });
   </script>
 </body>
