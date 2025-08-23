@@ -11,16 +11,16 @@ const LEVELS = [
     title: "第一關",
     boardData: [
       ['red','red','red','red','red','red','red','red','red','red'],
-    ['red','green','green','green','green','green','green','green','green','red'],
-    ['red','green','green','green','green','green','green','green','green','red'],
-    ['red','green','green','green','green','green','green','green','green','red'],
-    ['red','green','green','green','green','green','green','green','green','red'],
-    ['red','green','green','green','green','green','green','green','green','red'],
-    ['red','red','red','red','red','red','red','red','red','red'],
-    ['red','blue','blue','blue','blue','blue','blue','blue','blue','red']
-  ],
-  target: 'blue',
-  maxMoves: 2
+      ['red','green','green','green','green','green','green','green','green','red'],
+      ['red','green','green','green','green','green','green','green','green','red'],
+      ['red','green','green','green','green','green','green','green','green','red'],
+      ['red','green','green','green','green','green','green','green','green','red'],
+      ['red','green','green','green','green','green','green','green','green','red'],
+      ['red','red','red','red','red','red','red','red','red','red'],
+      ['red','blue','blue','blue','blue','blue','blue','blue','blue','red']
+    ],
+    target: 'blue',
+    maxMoves: 2
   },
   {
     id: 2,
@@ -34,9 +34,9 @@ const LEVELS = [
       ['red','green','green','green','green','green','green','green','green','red'],
       ['red','green','green','green','green','green','green','green','green','red'],
       ['red','red','red','red','red','red','red','red','red','red']
-  ],
-  target: 'yellow',
-  maxMoves: 3
+    ],
+    target: 'yellow',
+    maxMoves: 3
   },
   {
     id: 3,
@@ -50,9 +50,9 @@ const LEVELS = [
       ['red','green','green','green','green','green','green','green','green','red'],
       ['red','green','green','green','green','green','green','green','green','red'],
       ['red','red','red','red','red','red','red','red','red','red']
-  ],
-  target: 'green',
-  maxMoves: 3
+    ],
+    target: 'green',
+    maxMoves: 3
   },
   {
     id: 4,
@@ -66,9 +66,9 @@ const LEVELS = [
       ['red','red','red','red','red','red','red','red','red','red'],
       ['green','red','green','red','green','red','green','red','green','red'],
       ['blue','yellow','blue','yellow','blue','yellow','blue','yellow','blue','yellow']
-  ],
-  target: 'blue',
-  maxMoves: 3
+    ],
+    target: 'blue',
+    maxMoves: 3
   },
   {
     id: 5,
@@ -82,9 +82,9 @@ const LEVELS = [
       ['red','red','red','red','red','red','red','red','red', null ],
       ['green','red','green','red','green','red','green','red','green','red'],
       ['blue','yellow','blue','yellow','blue','yellow','blue','yellow','blue','blue']
-  ],
-  target: 'blue',
-  maxMoves: 4
+    ],
+    target: 'blue',
+    maxMoves: 4
   },
   {
     id: 6,
@@ -98,10 +98,9 @@ const LEVELS = [
       ['yellow','yellow','yellow','yellow','blue','blue','yellow','yellow','yellow','yellow'],
       ['blue','red','red','blue','red','red','blue','red','red','blue'],
       ['green','red','red','green','red','red','green','red','red','green']
-  ],
-  target: 'blue',
-  maxMoves: 4
-};
+    ],
+    target: 'blue',
+    maxMoves: 4
   },
   {
     id: 7,
@@ -115,15 +114,15 @@ const LEVELS = [
       ['red','green','green','green','green','green','green','green','green','green'],
       ['red','red','green','green','red','blue','red','blue','red','blue'],
       ['red','red','red','red','red','blue','red','blue','red','blue']
-  ],
-  target: 'blue',
-  maxMoves: 3
+    ],
+    target: 'blue',
+    maxMoves: 3
   },
   {
     id: 8,
     title: "第八關",
     boardData: [
-       ['red','red','red','red','red','blue','red','blue','red','blue'],
+      ['red','red','red','red','red','blue','red','blue','red','blue'],
       ['red','red','green','green','red','blue','red','blue','red','blue'],
       ['red','blue','blue','blue','blue','blue','blue','blue','blue','green'],
       ['yellow','blue','yellow','green','yellow','yellow','yellow','yellow','blue','yellow'],
@@ -131,9 +130,9 @@ const LEVELS = [
       ['red','blue','blue','blue','blue','blue','blue','blue','blue','green'],
       ['red','red','green','green','red','blue','red','blue','red','blue'],
       ['red','red','red','red','red','blue','red','blue','red','blue']
-  ],
-  target: 'red',
-  maxMoves: 4
+    ],
+    target: 'red',
+    maxMoves: 4
   },
   {
     id: 9,
@@ -143,14 +142,11 @@ const LEVELS = [
       ['red','red','green','green','red','blue','red','blue','red','blue'],
       ['red','green','green','green','green','green','green','green','green','green'],
       [ null,'green','yellow','red','yellow','red','yellow','red','yellow','red'],
-      [ null,'green','red','yellow','red','yellow','red','yellow','red','yellow',],
+      [ null,'green','red','yellow','red','yellow','red','yellow','red','yellow'],
       ['red','green','green','green','green','green','green','green','green','green'],
       ['red','red','green','green','red','blue','red','blue','red','blue'],
       ['red','red','red','red','red','blue','red','blue','red','blue']
-  ],
-  target: 'red',
-  maxMoves: 3
-
+    ],
     target: 'red',
     maxMoves: 4
   },
@@ -162,14 +158,12 @@ const LEVELS = [
       ['red','blue', null ,'red', null ,'red','red', null ,'blue', null ],
       [ null , null ,'red','yellow','yellow','blue','yellow','green','red','red'],
       ['red','blue', null ,'yellow','red','blue','blue','green','green','red'],
-      ['yellow','green','green','green','green', null ,'blue','yellow','yellow','green',],
+      ['yellow','green','green','green','green', null ,'blue','yellow','yellow','green'],
       ['yellow','red','red', null ,'red','red','yellow','green','green', null],
       ['green','red', null , null ,'yellow','yellow', null ,'blue','blue','red'],
       ['yellow','yellow','yellow', null , null ,'green', null , null ,'red','red']
-  ],
-  target: 'red',
-  maxMoves: 7
+    ],
     target: 'red',
-    maxMoves: 3
+    maxMoves: 7
   }
 ];
