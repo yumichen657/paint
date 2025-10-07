@@ -165,5 +165,21 @@ const LEVELS = [
     ],
     target: 'red',
     maxMoves: 7
+  },
+  {
+    id: 11,
+    title: "第十一關",
+    boardData: [
+      ['red','blue','blue','blue','green', null ,'red','blue','green','red'],
+      ['red','blue', null ,'red', null ,'red','red', null ,'blue', null ],
+      [ null , null ,'red','yellow','yellow','blue','yellow','green','red','red'],
+      ['red','blue', null ,'yellow','red','blue','blue','green','green','red'],
+      ['yellow','green','green','green','green', null ,'blue','yellow','yellow','green'],
+      ['yellow','red','red', null ,'red','red','yellow','green','green', null],
+      ['green','red', null , null ,'yellow','yellow', null ,'blue','blue','red'],
+      ['yellow','yellow','yellow', null , null ,'green', null , null ,'red','red']
+    ],
+    target: 'red',
+    maxMoves: 7
   }
 ];
