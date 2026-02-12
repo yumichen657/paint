@@ -184,7 +184,7 @@ const LEVELS = [
   },
   {
     id: 12,
-    title: "測試",
+    title: "第十二關",
     boardData: [
       ['blue',  'blue',  'blue',  'blue',  'red',    'red',    'green',  'green', 'green', 'green'],
       ['blue',  'blue',  'blue',  'blue',  'red',    'red',    'green',  'green', 'green', 'green'],
@@ -197,5 +197,165 @@ const LEVELS = [
     ],
     target: 'yellow',
     maxMoves: 4 
+  }
+  {
+    id: 13,
+    title: "第十三關",
+    boardData: [
+      ['blue', 'blue', 'blue', null, 'red', 'red', null, 'green', 'green', 'green'],
+      ['blue', 'blue', 'blue', null, 'red', 'red', null, 'green', 'green', 'green'],
+      ['blue', 'blue', 'blue', 'red', 'red', 'red', 'red', 'green', 'green', 'green'],
+      [null, null, 'red', 'red', 'red', 'red', 'red', 'red', null, null],
+      [null, null, 'red', 'red', 'red', 'red', 'red', 'red', null, null],
+      ['yellow', 'yellow', 'yellow', 'red', 'red', 'red', 'red', 'blue', 'blue', 'blue'],
+      ['yellow', 'yellow', 'yellow', null, 'red', 'red', null, 'blue', 'blue', 'blue'],
+      ['yellow', 'yellow', 'yellow', null, 'red', 'red', null, 'blue', 'blue', 'blue']
+    ],
+    target: 'red',
+    maxMoves: 4
+  },
+  {
+    id: 14,
+    title: "第十四關",
+    boardData: [
+      ['red', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'red'],
+      ['red', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'red'],
+      ['red', 'blue', null, null, null, null, null, null, 'blue', 'red'],
+      ['red', 'blue', null, 'green', 'green', 'green', 'green', null, 'blue', 'red'],
+      ['red', 'blue', null, 'green', 'yellow', 'yellow', 'green', null, 'blue', 'red'],
+      ['red', 'blue', null, 'green', 'green', 'green', 'green', null, 'blue', 'red'],
+      ['red', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'red'],
+      ['red', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'red']
+    ],
+    target: 'yellow',
+    maxMoves: 4
+  },
+  {
+    id: 15,
+    title: "第十五關",
+    boardData: [
+      ['yellow', 'yellow', 'blue', 'blue', 'green', 'green', 'red', 'red', 'blue', 'blue'],
+      ['yellow', null, null, null, null, null, null, null, null, 'blue'],
+      ['red', 'red', 'red', 'red', 'red', 'red', 'red', 'red', null, 'green'],
+      ['green', null, null, null, null, null, null, 'red', null, 'green'],
+      ['green', null, 'blue', 'blue', 'blue', 'blue', null, 'red', null, 'red'],
+      ['green', null, 'blue', 'yellow', 'yellow', 'blue', null, 'red', null, 'red'],
+      ['green', null, null, null, null, null, null, 'red', null, 'red'],
+      ['green', 'green', 'green', 'green', 'green', 'green', 'green', 'red', 'red', 'red']
+    ],
+    target: 'yellow',
+    maxMoves: 6
+  },
+  {
+    id: 16,
+    title: "第十六關",
+    boardData: [
+      ['blue', 'red', 'blue', 'red', 'blue', 'red', 'blue', 'red', 'blue', 'red'],
+      ['red', 'blue', 'red', 'blue', 'red', 'blue', 'red', 'blue', 'red', 'blue'],
+      ['blue', 'red', 'blue', 'red', 'blue', 'red', 'blue', 'red', 'blue', 'red'],
+      ['red', 'blue', 'red', 'blue', 'red', 'blue', 'red', 'blue', 'red', 'blue'],
+      ['blue', 'red', 'blue', 'red', 'blue', 'red', 'blue', 'red', 'blue', 'red'],
+      ['red', 'blue', 'red', 'blue', 'red', 'blue', 'red', 'blue', 'red', 'blue'],
+      ['blue', 'red', 'blue', 'red', 'blue', 'red', 'blue', 'red', 'blue', 'red'],
+      ['red', 'blue', 'red', 'blue', 'red', 'blue', 'red', 'blue', 'red', 'blue']
+    ],
+    target: 'green',
+    maxMoves: 10
+  },
+  {
+    id: 17,
+    title: "第十七關",
+    boardData: [
+      ['green', 'green', 'green', null, 'yellow', 'yellow', null, 'blue', 'blue', 'blue'],
+      ['green', 'red', 'green', null, 'yellow', 'red', 'yellow', null, 'blue', 'red'],
+      ['green', 'green', 'green', null, 'yellow', 'yellow', null, 'blue', 'blue', 'blue'],
+      [null, null, null, null, null, null, null, null, null, null],
+      ['blue', 'blue', 'blue', null, 'green', 'green', null, 'yellow', 'yellow', 'yellow'],
+      ['blue', 'red', 'blue', null, 'green', 'red', 'green', null, 'yellow', 'red'],
+      ['blue', 'blue', 'blue', null, 'green', 'green', null, 'yellow', 'yellow', 'yellow'],
+      ['red', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'red']
+    ],
+    target: 'red',
+    maxMoves: 5
+  },
+  {
+    id: 18,
+    title: "第十八關",
+    boardData: [
+      ['blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue', 'blue'],
+      ['blue', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'blue'],
+      ['blue', 'red', 'green', 'green', 'green', 'green', 'green', 'green', 'red', 'blue'],
+      ['blue', 'red', 'green', 'yellow', 'yellow', 'yellow', 'yellow', 'green', 'red', 'blue'],
+      ['blue', 'red', 'green', 'yellow', 'red', 'red', 'yellow', 'green', 'red', 'blue'],
+      ['blue', 'red', 'green', 'yellow', 'yellow', 'yellow', 'yellow', 'green', 'red', 'blue'],
+      ['blue', 'red', 'green', 'green', 'green', 'green', 'green', 'green', 'red', 'blue'],
+      ['blue', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'blue']
+    ],
+    target: 'red',
+    maxMoves: 5
+  },
+  {
+    id: 19,
+    title: "第十九關",
+    boardData: [
+      ['red', null, 'blue', null, 'green', null, 'yellow', null, 'red', null],
+      [null, 'red', null, 'blue', null, 'green', null, 'yellow', null, 'red'],
+      ['red', null, 'blue', null, 'green', null, 'yellow', null, 'red', null],
+      [null, 'red', null, 'blue', null, 'green', null, 'yellow', null, 'red'],
+      ['red', null, 'blue', null, 'green', null, 'yellow', null, 'red', null],
+      [null, 'red', null, 'blue', null, 'green', null, 'yellow', null, 'red'],
+      ['red', null, 'blue', null, 'green', null, 'yellow', null, 'red', null],
+      [null, 'red', null, 'blue', null, 'green', null, 'yellow', null, 'red']
+    ],
+    target: 'blue',
+    maxMoves: 12
+  },
+  {
+    id: 20,
+    title: "第二十關",
+    boardData: [
+      ['yellow', 'yellow', 'yellow', 'yellow', 'yellow', 'yellow', 'yellow', 'yellow', 'yellow', 'yellow'],
+      ['yellow', null, null, null, null, null, null, null, null, 'yellow'],
+      ['yellow', null, 'blue', 'blue', 'blue', 'blue', 'blue', 'blue', null, 'yellow'],
+      ['yellow', null, 'blue', null, null, null, null, 'blue', null, 'yellow'],
+      ['yellow', null, 'blue', null, 'red', 'red', null, 'blue', null, 'yellow'],
+      ['yellow', null, 'blue', 'blue', 'blue', 'blue', 'blue', 'blue', null, 'yellow'],
+      ['yellow', null, null, null, null, null, null, null, null, 'yellow'],
+      ['yellow', 'yellow', 'yellow', 'yellow', 'yellow', 'yellow', 'yellow', 'yellow', 'yellow', 'yellow']
+    ],
+    target: 'red',
+    maxMoves: 3
+  },
+  {
+    id: 21,
+    title: "第二十一關",
+    boardData: [
+      ['green', 'green', 'green', 'blue', 'blue', 'blue', 'red', 'red', 'red', 'yellow'],
+      ['green', 'green', 'green', 'blue', 'blue', 'blue', 'red', 'red', 'red', 'yellow'],
+      ['green', 'green', 'green', 'blue', 'blue', 'blue', 'red', 'red', 'red', 'yellow'],
+      [null, null, null, null, null, null, null, null, null, 'yellow'],
+      ['yellow', 'red', 'red', 'red', 'blue', 'blue', 'blue', 'green', 'green', 'green'],
+      ['yellow', 'red', 'red', 'red', 'blue', 'blue', 'blue', 'green', 'green', 'green'],
+      ['yellow', 'red', 'red', 'red', 'blue', 'blue', 'blue', 'green', 'green', 'green'],
+      ['yellow', 'yellow', 'yellow', 'yellow', 'yellow', 'yellow', 'yellow', 'yellow', 'yellow', 'yellow']
+    ],
+    target: 'yellow',
+    maxMoves: 5
+  },
+  {
+    id: 22,
+    title: "第二十二關",
+    boardData: [
+      ['red', 'blue', 'green', 'yellow', 'red', 'blue', 'green', 'yellow', 'red', 'blue'],
+      ['blue', null, null, null, null, null, null, null, null, 'green'],
+      ['green', null, 'red', 'blue', 'green', 'yellow', 'red', 'blue', null, 'yellow'],
+      ['yellow', null, 'blue', null, null, null, null, 'green', null, 'red'],
+      ['red', null, 'green', null, 'yellow', 'yellow', null, 'yellow', null, 'blue'],
+      ['blue', null, 'yellow', 'red', 'blue', 'green', 'yellow', 'red', null, 'green'],
+      ['green', null, null, null, null, null, null, null, null, 'yellow'],
+      ['yellow', 'red', 'blue', 'green', 'yellow', 'red', 'blue', 'green', 'yellow', 'red']
+    ],
+    target: 'red',
+    maxMoves: 8
   }
 ];
