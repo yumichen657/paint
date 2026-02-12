@@ -181,5 +181,21 @@ const LEVELS = [
     ],
     target: 'red',
     maxMoves: 7
+  },
+  {
+    id: 12,
+    title: "測試",
+    boardData: [
+      ['blue', 'blue', 'blue', null, 'red', 'red', 'red', null, 'green', 'green'],
+      ['blue', null, 'blue', null, 'red', null, 'red', null, 'green', null],
+      [null, null, 'yellow', 'yellow', 'yellow', 'yellow', 'yellow', 'yellow', null, null],
+      ['green', 'green', 'green', null, 'blue', 'blue', 'blue', null, 'red', 'red'],
+      ['red', null, 'red', null, 'green', null, 'green', null, 'blue', null],
+      ['red', 'red', 'red', null, 'green', 'green', 'green', null, 'blue', 'blue'],
+      [null, null, null, null, null, null, null, null, null, null],
+      ['yellow', 'yellow', 'blue', 'blue', 'green', 'green', 'red', 'red', 'red', 'red']
+    ],
+    target: 'yellow',
+    maxMoves: 4 
   }
 ];
