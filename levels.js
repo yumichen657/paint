@@ -197,7 +197,7 @@ const LEVELS = [
     ],
     target: 'yellow',
     maxMoves: 4 
-  }
+  },
   {
     id: 13,
     title: "第十三關",
