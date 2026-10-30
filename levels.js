@@ -167,7 +167,6 @@ const LEVELS = [
     maxMoves: 7
   },
   {
-      {
     id: 11,
     title: "第二十三關・滾雪球",
     boardData: [
