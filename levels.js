@@ -181,5 +181,30 @@ const LEVELS = [
     ],
     target: 'yellow',
     maxMoves: 5
+  },
+    {
+    id: 12,
+    title: "逆向・笑臉",
+    boardData: [
+      ['red','red','red','blue','blue','blue','blue','red','red','red'],
+      ['red','red','blue','blue','blue','blue','blue','blue','red','red'],
+      ['red','blue','blue','green','blue','blue','green','blue','blue','red'],
+      ['green','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','green'],
+      ['green','yellow','blue','yellow','yellow','yellow','yellow','blue','yellow','green'],
+      ['green','yellow','yellow','green','green','green','green','yellow','yellow','green'],
+      ['blue','blue','yellow','yellow','yellow','yellow','yellow','yellow','blue','blue'],
+      ['blue','blue','blue','yellow','yellow','yellow','yellow','blue','blue','blue']
+    ],
+    goalBoard: [
+      ['green','green','green','yellow','yellow','yellow','yellow','green','green','green'],
+      ['green','green','yellow','yellow','yellow','yellow','yellow','yellow','green','green'],
+      ['green','yellow','yellow','blue','yellow','yellow','blue','yellow','yellow','green'],
+      ['green','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','green'],
+      ['green','yellow','red','yellow','yellow','yellow','yellow','red','yellow','green'],
+      ['green','yellow','yellow','red','red','red','red','yellow','yellow','green'],
+      ['green','green','yellow','yellow','yellow','yellow','yellow','yellow','green','green'],
+      ['green','green','green','yellow','yellow','yellow','yellow','green','green','green']
+    ],
+    maxMoves: 11
   }
 ];
