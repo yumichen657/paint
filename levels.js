@@ -205,6 +205,6 @@ const LEVELS = [
       ['green','green','yellow','yellow','yellow','yellow','yellow','yellow','green','green'],
       ['green','green','green','yellow','yellow','yellow','yellow','green','green','green']
     ],
-    maxMoves: 11
+    maxMoves: 10
   }
 ];
