@@ -34,6 +34,49 @@ function buildBoardFromParams(cfg) {
   );
 }
 
+// ===== 連通區塊工具（逆向模式判斷卡死用）=====
+const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+
+// 回傳每格所屬的區塊編號（null 格為 -1）
+function labelComponents(board) {
+  const R = board.length, C = board[0].length;
+  const label = board.map(row => row.map(() => -1));
+  let id = 0;
+  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
+    if (board[r][c] === null || label[r][c] !== -1) continue;
+    const col = board[r][c];
+    const stack = [[r, c]];
+    label[r][c] = id;
+    while (stack.length) {
+      const [y, x] = stack.pop();
+      for (const [dy, dx] of dirs) {
+        const ny = y + dy, nx = x + dx;
+        if (ny < 0 || nx < 0 || ny >= R || nx >= C) continue;
+        if (label[ny][nx] !== -1 || board[ny][nx] !== col) continue;
+        label[ny][nx] = id;
+        stack.push([ny, nx]);
+      }
+    }
+    id++;
+  }
+  return label;
+}
+
+// 逆向模式：如果某個區塊橫跨了目標圖中兩個不同區域，就永遠分不開 → 卡死
+function isStillSolvable(board, goal) {
+  const cur = labelComponents(board);
+  const tgt = labelComponents(goal);
+  const owner = new Map(); // 目前區塊 → 目標區塊
+  for (let r = 0; r < board.length; r++) for (let c = 0; c < board[0].length; c++) {
+    const a = cur[r][c];
+    if (a === -1) continue;
+    const b = tgt[r][c];
+    if (!owner.has(a)) owner.set(a, b);
+    else if (owner.get(a) !== b) return false;
+  }
+  return true;
+}
+
 // ===== 檢查所有關卡資料（只在 console 警告）=====
 function validateLevels() {
   LEVELS.forEach(l => {
@@ -43,8 +86,22 @@ function validateLevels() {
         console.warn(`第${l.id}關 (${r},${c}) 非法值:`, v, '（障礙請用 null）');
       }
     }));
-    if (!COLORS.includes(l.target)) console.warn(`第${l.id}關 target 不在調色盤:`, l.target);
     if (!b.every(row => row.length === b[0].length)) console.warn(`第${l.id}關 每列長度不一致`);
+
+    if (l.goalBoard) {
+      const g = l.goalBoard;
+      if (g.length !== b.length || g.some((row, r) => row.length !== b[r].length)) {
+        console.warn(`第${l.id}關 goalBoard 大小跟 boardData 不同`);
+        return;
+      }
+      g.forEach((row, r) => row.forEach((v, c) => {
+        if ((v === null) !== (b[r][c] === null)) console.warn(`第${l.id}關 (${r},${c}) null 位置跟起始盤面不一致`);
+        if (v !== null && !COLORS.includes(v)) console.warn(`第${l.id}關 goalBoard (${r},${c}) 非法值:`, v);
+      }));
+      if (!isStillSolvable(b, g)) console.warn(`第${l.id}關 起始盤面就已經無解`);
+    } else if (!COLORS.includes(l.target)) {
+      console.warn(`第${l.id}關 target 不在調色盤:`, l.target);
+    }
   });
 }
 validateLevels();
@@ -52,9 +109,26 @@ validateLevels();
 const levelConfig = {
   title: raw.title || `第 ${levelId} 關`,
   boardData: raw.boardData || buildBoardFromParams(raw),
+  goalBoard: raw.goalBoard || null,         // 有 goalBoard 就是逆向解謎關
   target: raw.target || 'blue',
   maxMoves: raw.maxMoves || 6
 };
+const isReverse = !!levelConfig.goalBoard;
+
+// ===== 逆向模式需要的樣式（直接注入，不用改 style.css）=====
+(function injectStyle() {
+  const css = `
+    .goal-wrap { margin: 12px auto; text-align: center; }
+    .goal-wrap .goal-title { font-size: 14px; margin-bottom: 6px; opacity: .8; }
+    .goal-grid { display: inline-grid; gap: 2px; padding: 4px; background: rgba(0,0,0,.15); border-radius: 6px; }
+    .goal-cell { width: 16px; height: 16px; border-radius: 3px; }
+    .goal-cell.hole { background: transparent; }
+    .stuck-msg { color: #e74c3c; font-weight: bold; text-align: center; margin: 8px 0; display: none; }
+  `;
+  const s = document.createElement('style');
+  s.textContent = css;
+  document.head.appendChild(s);
+})();
 
 // ===== DOM =====
 const boardEl = document.getElementById('board');
@@ -68,6 +142,32 @@ const targetLabelEl = document.getElementById('targetLabel');
 const levelTitleEl = document.getElementById('levelTitle');
 const resetBtn = document.getElementById('resetBtn');
 
+// 逆向模式：在盤面後面加上「目標圖」和「卡死提示」
+let stuckMsgEl = null;
+if (isReverse) {
+  const wrap = document.createElement('div');
+  wrap.className = 'goal-wrap';
+  wrap.innerHTML = '<div class="goal-title">目標圖案</div>';
+  const grid = document.createElement('div');
+  grid.className = 'goal-grid';
+  grid.style.gridTemplateColumns = `repeat(${levelConfig.goalBoard[0].length}, 16px)`;
+  levelConfig.goalBoard.forEach(row => row.forEach(v => {
+    const d = document.createElement('div');
+    d.className = 'goal-cell';
+    if (v === null) d.classList.add('hole');
+    else d.style.backgroundColor = v;
+    grid.appendChild(d);
+  }));
+  wrap.appendChild(grid);
+
+  stuckMsgEl = document.createElement('div');
+  stuckMsgEl.className = 'stuck-msg';
+  stuckMsgEl.textContent = '⚠️ 兩個不同區域黏在一起了，這盤已經無法完成，請重來';
+
+  boardEl.insertAdjacentElement('afterend', wrap);
+  wrap.insertAdjacentElement('afterend', stuckMsgEl);
+}
+
 // ===== 狀態 =====
 let boardData = JSON.parse(JSON.stringify(levelConfig.boardData));
 let currentColor = null;
@@ -76,7 +176,7 @@ let demoRunning = false;
 
 // ===== 初始化 UI =====
 levelTitleEl.textContent = levelConfig.title;
-targetLabelEl.textContent = levelConfig.target;
+targetLabelEl.textContent = isReverse ? '照下方圖案' : levelConfig.target;
 movesLeftEl.textContent = movesLeft;
 
 function applyGridCols() {
@@ -138,7 +238,6 @@ window.addEventListener('load', () => {
 });
 
 // ===== 染色（DFS）=====
-const dirs = [[1, 0], [-1, 0], [0, 1], [0, -1]];
 function floodFill(r, c, oldColor, newColor) {
   if (r < 0 || r >= boardData.length || c < 0 || c >= boardData[0].length) return;
   if (boardData[r][c] === null) return;
@@ -149,6 +248,9 @@ function floodFill(r, c, oldColor, newColor) {
 
 // ===== 勝負判定 =====
 function isWin() {
+  if (isReverse) {
+    return boardData.every((row, r) => row.every((cell, c) => cell === levelConfig.goalBoard[r][c]));
+  }
   return boardData.every(row => row.every(cell => cell === levelConfig.target || cell === null));
 }
 
@@ -164,6 +266,13 @@ function checkWinLose() {
     }, 80);
     return;
   }
+
+  // 逆向模式：提早告訴玩家已經卡死，不用浪費剩下的步數
+  if (isReverse && !isStillSolvable(boardData, levelConfig.goalBoard)) {
+    if (stuckMsgEl) stuckMsgEl.style.display = 'block';
+    return;
+  }
+
   if (movesLeft <= 0) {
     setTimeout(() => {
       if (confirm('步數用完，挑戰失敗。要重試嗎？')) resetLevel();
@@ -178,6 +287,7 @@ function resetLevel() {
   movesLeftEl.textContent = movesLeft;
   currentColor = null;
   paletteBtns.forEach(b => b.classList.remove('selected'));
+  if (stuckMsgEl) stuckMsgEl.style.display = 'none';
   renderBoard();
 }
 
