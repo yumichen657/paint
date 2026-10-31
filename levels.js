@@ -168,7 +168,7 @@ const LEVELS = [
   },
   {
     id: 11,
-    title: "第二十三關・滾雪球",
+    title: "第十一關",
     boardData: [
       ['red','red','red','red','yellow','yellow','yellow','yellow','blue','blue'],
       ['red','green','green','red','yellow','blue','blue','yellow','blue','blue'],
@@ -180,6 +180,6 @@ const LEVELS = [
       ['blue','blue','blue','blue', null ,'red','yellow','yellow','yellow','yellow']
     ],
     target: 'yellow',
-    maxMoves: 6
+    maxMoves: 5
   }
 ];
