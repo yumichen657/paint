@@ -2,55 +2,82 @@
 <html lang="zh-TW">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#1b1d23" />
   <title>溢彩畫 - 關卡</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="game-body">
-  <button id="helpBtn" title="教學">?</button>
+  <button id="helpBtn" type="button" title="教學" aria-label="開啟教學">?</button>
 
   <header class="game-header">
     <h1 id="levelTitle">第 ? 關</h1>
     <div class="status">
-      <div>目標顏色：<span id="targetLabel"></span></div>
+      <div>目標：<span id="targetLabel"></span></div>
       <div>剩餘步數：<span id="movesLeft"></span></div>
     </div>
   </header>
 
-  <div id="palette" aria-label="調色盤">
-    <button class="color-btn" data-color="red" style="background:red"></button>
-    <button class="color-btn" data-color="green" style="background:green"></button>
-    <button class="color-btn" data-color="blue" style="background:blue"></button>
-    <button class="color-btn" data-color="yellow" style="background:gold"></button>
-  </div>
+  <main>
+    <!-- 調色盤按鈕由下方程式依 PALETTE 自動產生，顏色跟盤面完全一致 -->
+    <div id="palette" role="group" aria-label="調色盤"></div>
 
-  <div id="board"></div>
+    <div id="board" aria-label="畫板"></div>
+  </main>
 
-  <!-- 教學 overlay（載入時會自動開） -->
-  <div id="tutorial" class="overlay" style="display:none">
+  <!-- 教學（第一關會自動開啟，其他關按 ? 開啟） -->
+  <div id="tutorial" class="overlay" style="display:none" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle">
     <div class="tutorial-box">
-      <h2>新手教學</h2>
+      <h2 id="tutorialTitle">新手教學</h2>
       <p>操作說明：</p>
       <ol>
-        <li>先點選調色盤顏色（會出現選中效果）。</li>
-        <li>再點選畫板任意色塊，該色塊相連的同色區域全部染成你選的顏色。</li>
-        <li>目標是把整個畫板變成「目標顏色」。每一關有步數限制，用完會失敗。</li>
+        <li>先點調色盤選一個顏色。</li>
+        <li>再點畫板上任一色塊，它和相連的同色區域會一起染成你選的顏色。</li>
+        <li>在步數用完之前，把整個畫板染成「目標顏色」就過關。</li>
       </ol>
-      <div class="message">提示：灰色洞（空格）不會被染色，也會阻隔連通。</div>
+      <div class="message">提示：灰色的洞不能染色，也會把兩邊隔開，不算相連。</div>
+
+      <p><strong>逆向關卡</strong>（畫面下方出現「目標圖案」時）：</p>
+      <ol>
+        <li>要把畫板染成跟目標圖案一模一樣。</li>
+        <li>小心！兩個不同區域一旦染成同色黏在一起，就再也分不開，要想好順序。</li>
+      </ol>
+
       <hr>
       <div style="text-align:center;">
-        <button id="runDemo" class="cta">示範</button>
-        <button id="tutorialOk" class="cta">知道了，開始遊戲</button>
+        <button id="runDemo" type="button" class="cta">示範</button>
+        <button id="tutorialOk" type="button" class="cta">知道了，開始遊戲</button>
       </div>
     </div>
   </div>
 
   <div class="bottom-actions">
     <a class="soft-btn" href="index.html">返回選單</a>
-    <button id="resetBtn" class="soft-btn">重新開始</button>
+    <button id="resetBtn" type="button" class="soft-btn">重新開始</button>
   </div>
 
+  <noscript>這個遊戲需要開啟 JavaScript 才能玩。</noscript>
+
   <script src="levels.js"></script>
+  <script>
+    // 依 levels.js 的 PALETTE 產生調色盤按鈕（必須在 script.js 之前執行）
+    (function () {
+      const names = { red: '紅', green: '綠', blue: '藍', yellow: '黃' };
+      const pal = document.getElementById('palette');
+      const colors = (typeof PALETTE !== 'undefined' && PALETTE.length)
+        ? PALETTE : ['red', 'green', 'blue', 'yellow'];
+      colors.forEach(c => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'color-btn';
+        b.dataset.color = c;
+        b.style.background = c;
+        b.title = names[c] || c;
+        b.setAttribute('aria-label', names[c] || c);
+        pal.appendChild(b);
+      });
+    })();
+  </script>
   <script src="script.js"></script>
 </body>
 </html>
