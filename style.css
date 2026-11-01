@@ -16,7 +16,7 @@
 h1{margin:0 0 10px 0}
 .status{font-size:15px;color:#333;display:flex;gap:18px;align-items:center}
 
-#helpBtn{position:fixed;top:60px;right:16px;width:42px;height:42px;border-radius:50%;border:none;background:#3E5C76;color:white;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(62,92,118,0.3)}
+#helpBtn{position:fixed;top:60px;right:16px;width:42px;height:42px;border-radius:50%;border:none;background:#2B5FA8;color:white;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(43,95,168,0.3)}
 
 #palette{margin:18px 0; display:flex; gap:12px; justify-content:center}
 .color-btn{width:54px;height:54px;border-radius:8px;border:none;cursor:pointer;outline:none;transition:transform .12s, box-shadow .12s}

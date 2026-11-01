@@ -2,12 +2,12 @@
 const PALETTE = ['red','green','blue','yellow'];
 
 // 畫面上實際顯示的顏色（關卡資料仍用 red/green/blue/yellow，只換外觀）
-// 低飽和配色：看久不刺眼；四色亮度差距大，色盲玩家也分得出來
+// 中高飽和配色：鮮明但避開純色的刺眼感；四色亮度差距大，色盲玩家也分得出來
 const COLOR_HEX = {
-  red:    '#C8553D', // 赤陶紅
-  green:  '#8FC1A9', // 鼠尾草綠
-  blue:   '#3E5C76', // 石板藍
-  yellow: '#F2C57C'  // 沙黃
+  red:    '#E04B3A', // 番茄紅
+  green:  '#55C79A', // 薄荷綠
+  blue:   '#2B5FA8', // 寶藍
+  yellow: '#F6C443'  // 向日葵黃
 };
 
 /**
