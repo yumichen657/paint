@@ -182,37 +182,11 @@ const LEVELS = [
     target: 'yellow',
     maxMoves: 5
   },
-    {
-    id: 12,
-    title: "逆向・笑臉",
-    boardData: [
-      ['red','red','red','blue','blue','blue','blue','red','red','red'],
-      ['red','red','blue','blue','blue','blue','blue','blue','red','red'],
-      ['red','blue','blue','green','blue','blue','green','blue','blue','red'],
-      ['green','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','green'],
-      ['green','yellow','blue','yellow','yellow','yellow','yellow','blue','yellow','green'],
-      ['green','yellow','yellow','green','green','green','green','yellow','yellow','green'],
-      ['blue','blue','yellow','yellow','yellow','yellow','yellow','yellow','blue','blue'],
-      ['blue','blue','blue','yellow','yellow','yellow','yellow','blue','blue','blue']
-    ],
-    goalBoard: [
-      ['green','green','green','yellow','yellow','yellow','yellow','green','green','green'],
-      ['green','green','yellow','yellow','yellow','yellow','yellow','yellow','green','green'],
-      ['green','yellow','yellow','blue','yellow','yellow','blue','yellow','yellow','green'],
-      ['green','yellow','yellow','yellow','yellow','yellow','yellow','yellow','yellow','green'],
-      ['green','yellow','red','yellow','yellow','yellow','yellow','red','yellow','green'],
-      ['green','yellow','yellow','red','red','red','red','yellow','yellow','green'],
-      ['green','green','yellow','yellow','yellow','yellow','yellow','yellow','green','green'],
-      ['green','green','green','yellow','yellow','yellow','yellow','green','green','green']
-    ],
-    maxMoves: 10
-  },
 
-  // ===== 進階關卡（13～32）：每關 maxMoves = 已證明的最少步數，零容錯 =====
+  // ===== 進階關卡（12～31）：每關 maxMoves = 已證明的最少步數，零容錯 =====
   {
-    id: 13,
-    title: "第十三關",
-    subtitle: "進階・最少 5 步",
+    id: 12,
+    title: "第十二關",
     boardData: [
       ['yellow','yellow','blue','blue','green','green','green','green','green','green'],
       ['yellow','blue','blue','blue','green','green','green','green','green','red'],
@@ -227,9 +201,8 @@ const LEVELS = [
     maxMoves: 5
   },
   {
-    id: 14,
-    title: "第十四關",
-    subtitle: "進階・最少 5 步",
+    id: 13,
+    title: "第十三關",
     boardData: [
       ['yellow','yellow','yellow','yellow','green','green','red','green','blue','green'],
       ['yellow','yellow','yellow','yellow','yellow','red','red','red','blue','blue'],
@@ -244,9 +217,8 @@ const LEVELS = [
     maxMoves: 5
   },
   {
-    id: 15,
-    title: "第十五關",
-    subtitle: "進階・最少 5 步",
+    id: 14,
+    title: "第十四關",
     boardData: [
       ['blue','blue','red','red','red','red','red','red','red','red'],
       ['blue', null ,'blue','red', null ,'red','red', null ,'red','red'],
@@ -261,9 +233,8 @@ const LEVELS = [
     maxMoves: 5
   },
   {
-    id: 16,
-    title: "第十六關",
-    subtitle: "進階・最少 5 步",
+    id: 15,
+    title: "第十五關",
     boardData: [
       ['green','green','red','green','green','yellow','yellow','yellow','green','green'],
       ['green','green','red','green', null ,'yellow','yellow', null ,'yellow','green'],
@@ -278,9 +249,8 @@ const LEVELS = [
     maxMoves: 5
   },
   {
-    id: 17,
-    title: "第十七關",
-    subtitle: "進階・最少 6 步",
+    id: 16,
+    title: "第十六關",
     boardData: [
       ['red','red','yellow','yellow','red','blue','blue','blue','blue','red'],
       ['red', null ,'green','green', null ,'blue','blue', null ,'blue','red'],
@@ -295,9 +265,8 @@ const LEVELS = [
     maxMoves: 6
   },
   {
-    id: 18,
-    title: "第十八關",
-    subtitle: "進階・最少 5 步",
+    id: 17,
+    title: "第十七關",
     boardData: [
       ['yellow','blue','blue','red','red', null ,'yellow','blue','yellow','yellow'],
       [ null ,'yellow','red','red','red','red','red','yellow','yellow','yellow'],
@@ -312,9 +281,8 @@ const LEVELS = [
     maxMoves: 5
   },
   {
-    id: 19,
-    title: "第十九關",
-    subtitle: "進階・最少 6 步",
+    id: 18,
+    title: "第十八關",
     boardData: [
       ['green','green','green','green', null ,'green','red','red','red','red'],
       ['red','red','red','green','green','red','green','red','red','red'],
@@ -329,9 +297,8 @@ const LEVELS = [
     maxMoves: 6
   },
   {
-    id: 20,
-    title: "第二十關",
-    subtitle: "進階・最少 6 步",
+    id: 19,
+    title: "第十九關",
     boardData: [
       ['red','red','red', null ,'red','red','red','red','green','red'],
       ['red','red','yellow','red','red','red','yellow','blue','green','red'],
@@ -346,9 +313,8 @@ const LEVELS = [
     maxMoves: 6
   },
   {
-    id: 21,
-    title: "第二十一關",
-    subtitle: "進階・最少 10 步",
+    id: 20,
+    title: "第二十關",
     boardData: [
       ['blue','yellow','yellow','yellow','red', null ,'yellow','yellow','yellow','yellow'],
       ['blue','red','red','yellow','red', null ,'red','yellow','yellow','yellow'],
@@ -363,9 +329,8 @@ const LEVELS = [
     maxMoves: 10
   },
   {
-    id: 22,
-    title: "第二十二關",
-    subtitle: "進階・最少 11 步",
+    id: 21,
+    title: "第二十一關",
     boardData: [
       ['blue','red','green','red', null ,'blue','blue','green','yellow','yellow'],
       ['red','red','green','red', null ,'blue','blue','blue','green','yellow'],
@@ -380,9 +345,8 @@ const LEVELS = [
     maxMoves: 11
   },
   {
-    id: 23,
-    title: "第二十三關",
-    subtitle: "進階・最少 10 步",
+    id: 22,
+    title: "第二十二關",
     boardData: [
       ['yellow','yellow','red','red','red','blue','blue','blue','blue','blue'],
       ['yellow','yellow','red','red','red', null ,'green','blue','blue','blue'],
@@ -397,9 +361,8 @@ const LEVELS = [
     maxMoves: 10
   },
   {
-    id: 24,
-    title: "第二十四關",
-    subtitle: "進階・最少 6 步",
+    id: 23,
+    title: "第二十三關",
     boardData: [
       ['yellow','yellow','yellow', null ,'blue','blue','yellow','yellow','yellow','blue'],
       ['yellow','red','blue', null ,'blue','blue','yellow','yellow','yellow','yellow'],
@@ -414,9 +377,8 @@ const LEVELS = [
     maxMoves: 6
   },
   {
-    id: 25,
-    title: "第二十五關",
-    subtitle: "進階・最少 5 步",
+    id: 24,
+    title: "第二十四關",
     boardData: [
       ['green','red','yellow','blue','blue','blue','blue','blue','green','green'],
       ['green','red','red','blue','blue','blue','blue','blue','yellow','green'],
@@ -431,9 +393,8 @@ const LEVELS = [
     maxMoves: 5
   },
   {
-    id: 26,
-    title: "第二十六關",
-    subtitle: "進階・最少 6 步",
+    id: 25,
+    title: "第二十五關",
     boardData: [
       ['blue','blue','blue','blue','blue','red','red','red','green','green'],
       ['blue', null , null ,'red','yellow','red','red','red','green', null ],
@@ -448,9 +409,8 @@ const LEVELS = [
     maxMoves: 6
   },
   {
-    id: 27,
-    title: "第二十七關",
-    subtitle: "進階・最少 5 步",
+    id: 26,
+    title: "第二十六關",
     boardData: [
       ['blue','blue','blue','blue','blue','yellow','yellow','blue','blue','green'],
       ['blue','blue','blue','blue','yellow','yellow','yellow','blue','red','red'],
@@ -465,9 +425,8 @@ const LEVELS = [
     maxMoves: 5
   },
   {
-    id: 28,
-    title: "第二十八關",
-    subtitle: "進階・最少 13 步",
+    id: 27,
+    title: "第二十七關",
     boardData: [
       ['green','red','green','blue', null ,'blue','blue','red','red','blue'],
       ['green','red','blue','blue', null ,'blue','blue','red','red','red'],
@@ -482,9 +441,8 @@ const LEVELS = [
     maxMoves: 13
   },
   {
-    id: 29,
-    title: "第二十九關",
-    subtitle: "進階・最少 6 步",
+    id: 28,
+    title: "第二十八關",
     boardData: [
       ['green','green','blue','yellow','yellow','red','green','red','red','red'],
       ['green', null ,'blue','yellow', null ,'yellow','green', null ,'red','red'],
@@ -499,9 +457,8 @@ const LEVELS = [
     maxMoves: 6
   },
   {
-    id: 30,
-    title: "第三十關",
-    subtitle: "進階・最少 5 步",
+    id: 29,
+    title: "第二十九關",
     boardData: [
       ['red','yellow','red', null ,'red','red','blue','red','blue','blue'],
       ['yellow','yellow','yellow','red','red','blue','blue','red','green','green'],
@@ -516,9 +473,8 @@ const LEVELS = [
     maxMoves: 5
   },
   {
-    id: 31,
-    title: "第三十一關",
-    subtitle: "進階・最少 6 步",
+    id: 30,
+    title: "第三十關",
     boardData: [
       ['green','red','red','red','red','yellow','blue','blue','blue','red'],
       ['green','red','red','red','red','yellow','red','blue','red','red'],
@@ -533,9 +489,8 @@ const LEVELS = [
     maxMoves: 6
   },
   {
-    id: 32,
-    title: "第三十二關",
-    subtitle: "進階・最少 10 步",
+    id: 31,
+    title: "第三十一關",
     boardData: [
       ['red','red','red','red', null ,'blue','yellow','yellow','yellow','yellow'],
       ['red','red','red','yellow', null ,'blue','yellow','yellow','yellow','red'],
