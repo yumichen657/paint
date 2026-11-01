@@ -20,7 +20,19 @@ const LEVELS = [
       ['red','blue','blue','blue','blue','blue','blue','blue','blue','red']
     ],
     target: 'blue',
-    maxMoves: 2
+    maxMoves: 2,
+    // 互動教學：依序執行，每一步完成才會進到下一步
+    // focus: 'target' 目標顏色｜'moves' 剩餘步數｜'palette' 整個調色盤｜'board' 整個畫板
+    // wait: 'next' 按「下一步」｜'color' 點指定顏色按鈕｜'cell' 用指定顏色點指定顏色的格子
+    tutorial: [
+      { text: '歡迎來到溢彩畫！🎨<br>目標：把整個畫板都變成<b>藍色</b>。', focus: 'target', wait: 'next' },
+      { text: '每染一次色會用掉 1 步。<br>這關只有 <b>2 步</b>，要想好再出手！', focus: 'moves', wait: 'next' },
+      { text: '先在調色盤點<b>紅色</b>。', wait: 'color', color: 'red' },
+      { text: '現在點中間任何一格<b>綠色</b>。', wait: 'cell', cellColor: 'green', color: 'red' },
+      { text: '看到了嗎？<b>相連的同色格子會一起變色</b>，整片綠色都變紅了！<br>接著點<b>藍色</b>。', wait: 'color', color: 'blue' },
+      { text: '最後點任何一格<b>紅色</b>，把整片紅色一次染成藍色！', wait: 'cell', cellColor: 'red', color: 'blue' }
+    ],
+    winText: '教學完成！🎉\n\n之後的關卡會出現灰色斜線的「障礙格」：不能染色，也會把兩邊隔開。\n忘記規則可以按右上角的「?」。\n\n要前往第二關嗎？'
   },
   {
     id: 2,

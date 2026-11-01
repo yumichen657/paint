@@ -124,6 +124,37 @@ const isReverse = !!levelConfig.goalBoard;
     .goal-cell { width: 16px; height: 16px; border-radius: 3px; }
     .goal-cell.hole { background: transparent; }
     .stuck-msg { color: #e74c3c; font-weight: bold; text-align: center; margin: 8px 0; display: none; }
+    #board .cell { width: var(--cell, 44px); height: var(--cell, 44px); }
+    .target-chip { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 4px; border: 1px solid rgba(0,0,0,.15); }
+
+    /* ---- 互動教學 ---- */
+    body.tut-active { padding-bottom: 170px; }
+    body.tut-active .cell:not(.tut-focus),
+    body.tut-active .color-btn:not(.tut-focus) { opacity: .3; pointer-events: none; }
+    body.tut-active .bottom-actions { opacity: .4; }
+    .tut-focus { position: relative; z-index: 5; animation: tutPulse 1.1s ease-in-out infinite; }
+    .status > div.tut-focus { background: #fff3cd; border-radius: 8px; padding: 2px 8px; }
+    @keyframes tutPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+      50%      { box-shadow: 0 0 0 6px rgba(59,130,246,.6); }
+    }
+    .tut-bubble {
+      position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%);
+      width: min(440px, calc(100vw - 32px)); z-index: 25;
+      background: #1f2937; color: #fff; padding: 14px 16px; border-radius: 14px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.3); font-size: 16px; line-height: 1.55;
+    }
+    .tut-bubble b { color: #fde68a; }
+    .tut-row { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 8px; }
+    .tut-step { font-size: 12px; color: #9ca3af; }
+    .tut-next { background: #10b981; color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-size: 15px; cursor: pointer; }
+    .tut-skip { background: none; border: none; color: #9ca3af; font-size: 13px; text-decoration: underline; cursor: pointer; }
+    .tut-shake { animation: tutShake .35s; }
+    @keyframes tutShake {
+      0%, 100% { transform: translateX(-50%); }
+      25% { transform: translateX(calc(-50% - 8px)); }
+      75% { transform: translateX(calc(-50% + 8px)); }
+    }
   `;
   const s = document.createElement('style');
   s.textContent = css;
@@ -176,13 +207,25 @@ let demoRunning = false;
 
 // ===== 初始化 UI =====
 levelTitleEl.textContent = levelConfig.title;
-targetLabelEl.textContent = isReverse ? '照下方圖案' : levelConfig.target;
+const COLOR_ZH = { red: '紅色', green: '綠色', blue: '藍色', yellow: '黃色' };
+if (isReverse) {
+  targetLabelEl.textContent = '照下方圖案';
+} else {
+  targetLabelEl.innerHTML = `<span class="target-chip" style="background:${levelConfig.target}"></span>${COLOR_ZH[levelConfig.target] || levelConfig.target}`;
+}
 movesLeftEl.textContent = movesLeft;
 
+// 依螢幕寬度自動縮放格子（最大 44px），手機上盤面不會超出畫面
 function applyGridCols() {
   const cols = boardData[0]?.length || 10;
-  boardEl.style.gridTemplateColumns = `repeat(${cols}, 44px)`;
+  const gap = parseFloat(getComputedStyle(boardEl).columnGap) || 6;
+  const bodyPad = parseFloat(getComputedStyle(document.body).paddingLeft) || 0;
+  const avail = document.documentElement.clientWidth - bodyPad * 2;
+  const size = Math.max(22, Math.min(44, Math.floor((avail - gap * (cols - 1)) / cols)));
+  boardEl.style.gridTemplateColumns = `repeat(${cols}, ${size}px)`;
+  boardEl.style.setProperty('--cell', size + 'px');
 }
+window.addEventListener('resize', applyGridCols);
 
 function renderBoard() {
   boardEl.innerHTML = '';
@@ -203,10 +246,12 @@ function renderBoard() {
       boardEl.appendChild(cell);
     }
   }
+  guide.decorate();
 }
 
 function onCellClick(r, c, cell) {
   if (demoRunning) return;
+  if (!guide.allowCell(r, c)) return;
   cell.classList.add('selected');
   setTimeout(() => cell.classList.remove('selected'), 150);
   if (!currentColor) return;
@@ -217,15 +262,124 @@ function onCellClick(r, c, cell) {
   movesLeftEl.textContent = movesLeft;
   floodFill(r, c, oldColor, currentColor);
   renderBoard();
+  guide.afterCell();
   checkWinLose();
 }
+
+// ===== 互動教學（關卡有 tutorial 欄位時啟動）=====
+const guide = {
+  steps: Array.isArray(raw.tutorial) && raw.tutorial.length ? raw.tutorial : null,
+  i: -1,
+  el: null,
+  skipped: false,
+
+  active() { return !!this.steps && this.i >= 0 && this.i < this.steps.length; },
+  step() { return this.steps[this.i]; },
+
+  start() {
+    if (!this.steps || this.skipped) return;
+    this.i = 0;
+    document.body.classList.add('tut-active');
+    this.show();
+  },
+  end() {
+    this.i = -1;
+    document.body.classList.remove('tut-active');
+    this.clearFocus();
+    if (this.el) { this.el.remove(); this.el = null; }
+  },
+  next() {
+    this.i++;
+    if (this.i >= this.steps.length) this.end();
+    else this.show();
+  },
+
+  clearFocus() {
+    document.querySelectorAll('.tut-focus').forEach(e => e.classList.remove('tut-focus'));
+  },
+  // 把這一步要玩家注意的東西亮起來，其他變暗
+  decorate() {
+    if (!this.active()) return;
+    this.clearFocus();
+    const s = this.step();
+    const targets = [];
+    if (s.focus === 'target') targets.push(targetLabelEl.parentElement);
+    if (s.focus === 'moves') targets.push(movesLeftEl.parentElement);
+    if (s.focus === 'palette') paletteBtns.forEach(b => targets.push(b));
+    if (s.focus === 'board') boardEl.querySelectorAll('.cell:not(.hole)').forEach(c => targets.push(c));
+    if (s.wait === 'color') paletteBtns.forEach(b => { if (b.dataset.color === s.color) targets.push(b); });
+    if (s.wait === 'cell') {
+      boardEl.querySelectorAll('.cell').forEach(c => {
+        if (boardData[c.dataset.r][c.dataset.c] === s.cellColor) targets.push(c);
+      });
+    }
+    targets.forEach(e => e.classList.add('tut-focus'));
+    return targets;
+  },
+  show() {
+    if (!this.el) {
+      this.el = document.createElement('div');
+      this.el.className = 'tut-bubble';
+      this.el.setAttribute('role', 'status');
+      this.el.setAttribute('aria-live', 'polite');
+      document.body.appendChild(this.el);
+    }
+    const s = this.step();
+    this.el.innerHTML = `
+      <div class="tut-text">${s.text}</div>
+      <div class="tut-row">
+        <button type="button" class="tut-skip">跳過教學</button>
+        <span class="tut-step">${this.i + 1} / ${this.steps.length}</span>
+        ${s.wait === 'next' ? '<button type="button" class="tut-next">下一步</button>' : '<span></span>'}
+      </div>`;
+    this.el.querySelector('.tut-skip').onclick = () => { this.skipped = true; this.end(); };
+    const nextBtn = this.el.querySelector('.tut-next');
+    if (nextBtn) nextBtn.onclick = () => this.next();
+    const targets = this.decorate();
+    if (targets && targets[0]) targets[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  },
+  shake() {
+    if (!this.el) return;
+    this.el.classList.remove('tut-shake');
+    void this.el.offsetWidth; // 重新觸發動畫
+    this.el.classList.add('tut-shake');
+  },
+
+  // 點調色盤時：教學中只允許指定顏色
+  allowColor(color) {
+    if (!this.active()) return true;
+    const s = this.step();
+    if ((s.wait === 'color' || s.wait === 'cell') && color === s.color) return true;
+    this.shake();
+    return false;
+  },
+  afterColor(color) {
+    if (!this.active()) return;
+    const s = this.step();
+    if (s.wait === 'color' && color === s.color) setTimeout(() => this.next(), 250);
+  },
+  // 點格子時：教學中只允許「用指定顏色點指定顏色的格子」
+  allowCell(r, c) {
+    if (!this.active()) return true;
+    const s = this.step();
+    if (s.wait === 'cell' && boardData[r][c] === s.cellColor && currentColor === s.color) return true;
+    this.shake();
+    return false;
+  },
+  afterCell() {
+    if (this.active() && this.step().wait === 'cell') this.next();
+  }
+};
 
 // ===== 調色盤 =====
 paletteBtns.forEach(btn => {
   btn.addEventListener('click', () => {
+    const color = btn.dataset.color;
+    if (!guide.allowColor(color)) return;
     paletteBtns.forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
-    currentColor = btn.dataset.color;
+    currentColor = color;
+    guide.afterColor(color);
   });
 });
 
@@ -233,8 +387,10 @@ helpBtn?.addEventListener('click', () => tutorial.style.display = 'flex');
 tutorialOk?.addEventListener('click', () => tutorial.style.display = 'none');
 resetBtn?.addEventListener('click', resetLevel);
 
+// 有互動教學的關卡（第一關）一進來就開始教學；規則說明改成按「?」才打開
 window.addEventListener('load', () => {
-  tutorial.style.display = (levelId === 1) ? 'flex' : 'none';
+  tutorial.style.display = 'none';
+  guide.start();
 });
 
 // ===== 染色（DFS）=====
@@ -257,7 +413,7 @@ function isWin() {
 function checkWinLose() {
   if (isWin()) {
     setTimeout(() => {
-      const goNext = confirm('恭喜過關！要前往下一關嗎？');
+      const goNext = confirm(raw.winText || '恭喜過關！要前往下一關嗎？');
       if (goNext) {
         const nextId = levelId + 1;
         const hasNext = LEVELS.some(l => l.id === nextId);
@@ -288,7 +444,9 @@ function resetLevel() {
   currentColor = null;
   paletteBtns.forEach(b => b.classList.remove('selected'));
   if (stuckMsgEl) stuckMsgEl.style.display = 'none';
+  guide.end();
   renderBoard();
+  guide.start(); // 教學關重來時，教學也從頭開始（按過「跳過教學」就不會再出現）
 }
 
 // ===== 示範：隨機染幾次，結束後還原（不扣步數）=====

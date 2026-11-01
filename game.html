@@ -25,28 +25,21 @@
     <div id="board" aria-label="畫板"></div>
   </main>
 
-  <!-- 教學（第一關會自動開啟，其他關按 ? 開啟） -->
+  <!-- 規則說明（按右上角 ? 開啟；第一關的互動教學寫在 levels.js 的 tutorial 欄位） -->
   <div id="tutorial" class="overlay" style="display:none" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle">
     <div class="tutorial-box">
-      <h2 id="tutorialTitle">新手教學</h2>
-      <p>操作說明：</p>
+      <h2 id="tutorialTitle">遊戲規則</h2>
       <ol>
         <li>先點調色盤選一個顏色。</li>
         <li>再點畫板上任一色塊，它和相連的同色區域會一起染成你選的顏色。</li>
         <li>在步數用完之前，把整個畫板染成「目標顏色」就過關。</li>
       </ol>
-      <div class="message">提示：灰色的洞不能染色，也會把兩邊隔開，不算相連。</div>
-
-      <p><strong>逆向關卡</strong>（畫面下方出現「目標圖案」時）：</p>
-      <ol>
-        <li>要把畫板染成跟目標圖案一模一樣。</li>
-        <li>小心！兩個不同區域一旦染成同色黏在一起，就再也分不開，要想好順序。</li>
-      </ol>
+      <div class="message">提示：灰色斜線的障礙格不能染色，也會把兩邊隔開，不算相連。</div>
 
       <hr>
       <div style="text-align:center;">
         <button id="runDemo" type="button" class="cta">示範</button>
-        <button id="tutorialOk" type="button" class="cta">知道了，開始遊戲</button>
+        <button id="tutorialOk" type="button" class="cta">知道了</button>
       </div>
     </div>
   </div>
