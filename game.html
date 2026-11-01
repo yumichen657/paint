@@ -64,7 +64,7 @@
         b.type = 'button';
         b.className = 'color-btn';
         b.dataset.color = c;
-        b.style.background = c;
+        b.style.background = (typeof COLOR_HEX !== 'undefined' && COLOR_HEX[c]) || c;
         b.title = names[c] || c;
         b.setAttribute('aria-label', names[c] || c);
         pal.appendChild(b);

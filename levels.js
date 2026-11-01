@@ -1,6 +1,15 @@
 // 顏色白名單（調色盤按鈕也有這四種）
 const PALETTE = ['red','green','blue','yellow'];
 
+// 畫面上實際顯示的顏色（關卡資料仍用 red/green/blue/yellow，只換外觀）
+// 低飽和配色：看久不刺眼；四色亮度差距大，色盲玩家也分得出來
+const COLOR_HEX = {
+  red:    '#C8553D', // 赤陶紅
+  green:  '#8FC1A9', // 鼠尾草綠
+  blue:   '#3E5C76', // 石板藍
+  yellow: '#F2C57C'  // 沙黃
+};
+
 /**
  * LEVELS:
  * 每一關都使用你提供的 boardData、target、maxMoves

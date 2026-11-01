@@ -3,6 +3,11 @@ const COLORS = (typeof PALETTE !== 'undefined' && PALETTE.length)
   ? PALETTE
   : ['red', 'green', 'blue', 'yellow'];
 
+// 顏色名稱 → 畫面上顯示的色碼（定義在 levels.js 的 COLOR_HEX）
+function colorHex(c) {
+  return (typeof COLOR_HEX !== 'undefined' && COLOR_HEX[c]) || c;
+}
+
 // ===== 讀 URL 參數 & 取關卡設定 =====
 const params = new URLSearchParams(window.location.search);
 const requestedId = parseInt(params.get('level') || '1', 10);
@@ -124,7 +129,17 @@ const isReverse = !!levelConfig.goalBoard;
     .goal-cell { width: 16px; height: 16px; border-radius: 3px; }
     .goal-cell.hole { background: transparent; }
     .stuck-msg { color: #e74c3c; font-weight: bold; text-align: center; margin: 8px 0; display: none; }
-    #board .cell { width: var(--cell, 44px); height: var(--cell, 44px); }
+    #board .cell { width: var(--cell, 44px); height: var(--cell, 44px);
+                   transition: background-color .22s ease, transform .12s, box-shadow .12s; }
+    #board .cell.pop { animation: cellPop .3s cubic-bezier(.34,1.56,.64,1); }
+    @keyframes cellPop {
+      0%   { transform: scale(.78); }
+      100% { transform: scale(1); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #board .cell { transition: none; }
+      #board .cell.pop { animation: none; }
+    }
     .target-chip { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 4px; border: 1px solid rgba(0,0,0,.15); }
 
     /* ---- 互動教學 ---- */
@@ -186,7 +201,7 @@ if (isReverse) {
     const d = document.createElement('div');
     d.className = 'goal-cell';
     if (v === null) d.classList.add('hole');
-    else d.style.backgroundColor = v;
+    else d.style.backgroundColor = colorHex(v);
     grid.appendChild(d);
   }));
   wrap.appendChild(grid);
@@ -211,7 +226,7 @@ const COLOR_ZH = { red: '紅色', green: '綠色', blue: '藍色', yellow: '黃�
 if (isReverse) {
   targetLabelEl.textContent = '照下方圖案';
 } else {
-  targetLabelEl.innerHTML = `<span class="target-chip" style="background:${levelConfig.target}"></span>${COLOR_ZH[levelConfig.target] || levelConfig.target}`;
+  targetLabelEl.innerHTML = `<span class="target-chip" style="background:${colorHex(levelConfig.target)}"></span>${COLOR_ZH[levelConfig.target] || levelConfig.target}`;
 }
 movesLeftEl.textContent = movesLeft;
 
@@ -227,10 +242,16 @@ function applyGridCols() {
 }
 window.addEventListener('resize', applyGridCols);
 
+let cellEls = [];      // 每格的 DOM，動畫時直接更新，不重畫整個盤面
+let animating = false; // 染色動畫進行中，暫停操作
+let animGen = 0;       // 重新開始時讓還沒跑完的動畫失效
+
 function renderBoard() {
   boardEl.innerHTML = '';
   applyGridCols();
+  cellEls = [];
   for (let r = 0; r < boardData.length; r++) {
+    cellEls.push([]);
     for (let c = 0; c < boardData[r].length; c++) {
       const cell = document.createElement('div');
       cell.className = 'cell';
@@ -240,17 +261,64 @@ function renderBoard() {
       if (color === null) {
         cell.classList.add('hole');
       } else {
-        cell.style.backgroundColor = color;
+        cell.style.backgroundColor = colorHex(color);
         cell.addEventListener('click', () => onCellClick(r, c, cell));
       }
+      cell.addEventListener('animationend', e => { if (e.animationName === 'cellPop') cell.classList.remove('pop'); });
       boardEl.appendChild(cell);
+      cellEls[r].push(cell);
     }
   }
   guide.decorate();
 }
 
-function onCellClick(r, c, cell) {
-  if (demoRunning) return;
+// ===== 染色＋擴散動畫 =====
+// 先把資料改好（遊戲邏輯不受動畫影響），再從點擊的格子依距離一圈一圈更新畫面
+const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function paintAnimated(r, c, newColor) {
+  const oldColor = boardData[r][c];
+  const rows = boardData.length, cols = boardData[0].length;
+  const layers = [];
+  const seen = new Set([r + ',' + c]);
+  let frontier = [[r, c]];
+  while (frontier.length) {
+    layers.push(frontier);
+    const nxt = [];
+    for (const [y, x] of frontier) {
+      for (const [dy, dx] of dirs) {
+        const ny = y + dy, nx = x + dx, k = ny + ',' + nx;
+        if (ny < 0 || nx < 0 || ny >= rows || nx >= cols || seen.has(k)) continue;
+        if (boardData[ny][nx] !== oldColor) continue;
+        seen.add(k);
+        nxt.push([ny, nx]);
+      }
+    }
+    frontier = nxt;
+  }
+  for (const layer of layers) for (const [y, x] of layer) boardData[y][x] = newColor;
+
+  if (reduceMotion) { renderBoard(); return Promise.resolve(); }
+
+  const gen = animGen;
+  const step = Math.max(14, Math.min(45, 650 / layers.length)); // 大區塊也控制在約 0.7 秒內
+  return new Promise(res => {
+    layers.forEach((layer, i) => setTimeout(() => {
+      if (gen !== animGen) return;
+      for (const [y, x] of layer) {
+        const el = cellEls[y] && cellEls[y][x];
+        if (!el) continue;
+        el.style.backgroundColor = colorHex(newColor);
+        el.classList.remove('pop');
+        void el.offsetWidth; // 重新觸發動畫
+        el.classList.add('pop');
+      }
+    }, i * step));
+    setTimeout(res, (layers.length - 1) * step + 280);
+  });
+}
+
+async function onCellClick(r, c, cell) {
+  if (demoRunning || animating) return;
   if (!guide.allowCell(r, c)) return;
   cell.classList.add('selected');
   setTimeout(() => cell.classList.remove('selected'), 150);
@@ -260,8 +328,12 @@ function onCellClick(r, c, cell) {
   if (movesLeft <= 0) return;
   movesLeft--;
   movesLeftEl.textContent = movesLeft;
-  floodFill(r, c, oldColor, currentColor);
-  renderBoard();
+  const gen = animGen;
+  animating = true;
+  await paintAnimated(r, c, currentColor);
+  if (gen !== animGen) return; // 動畫途中按了重新開始
+  animating = false;
+  guide.decorate();
   guide.afterCell();
   checkWinLose();
 }
@@ -438,6 +510,8 @@ function checkWinLose() {
 
 function resetLevel() {
   if (demoRunning) return;
+  animGen++;          // 取消還沒跑完的染色動畫
+  animating = false;
   boardData = JSON.parse(JSON.stringify(levelConfig.boardData));
   movesLeft = levelConfig.maxMoves;
   movesLeftEl.textContent = movesLeft;
@@ -451,7 +525,7 @@ function resetLevel() {
 
 // ===== 示範：隨機染幾次，結束後還原（不扣步數）=====
 runDemoBtn?.addEventListener('click', async () => {
-  if (demoRunning) return;
+  if (demoRunning || animating) return;
 
   const cells = [];
   boardData.forEach((row, r) => row.forEach((v, c) => { if (v !== null) cells.push([r, c]); }));
@@ -468,9 +542,8 @@ runDemoBtn?.addEventListener('click', async () => {
     const options = COLORS.filter(x => x !== oldColor);
     if (options.length === 0) break;
     const pick = options[Math.floor(Math.random() * options.length)];
-    floodFill(r, c, oldColor, pick);
-    renderBoard();
-    await new Promise(res => setTimeout(res, 300));
+    await paintAnimated(r, c, pick);
+    await new Promise(res => setTimeout(res, 250));
   }
 
   await new Promise(res => setTimeout(res, 600));
