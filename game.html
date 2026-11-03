@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="game-body">
+  <!-- 帳號列：內容由 cloud.js 產生（手機上隱藏，在選關頁登入即可） -->
+  <div id="account" class="account-bar" aria-live="polite"></div>
   <button id="helpBtn" type="button" title="教學" aria-label="開啟教學">?</button>
 
   <header class="game-header">
@@ -52,6 +54,15 @@
   <noscript>這個遊戲需要開啟 JavaScript 才能玩。</noscript>
 
   <script src="levels.js"></script>
+  <script src="progress.js"></script>
+  <script>
+    // 關卡鎖定：還沒解鎖的關卡不能直接用網址進入，送回選關頁並說明原因
+    (function () {
+      const want = parseInt(new URLSearchParams(location.search).get('level') || '1', 10);
+      const lv = LEVELS.find(l => l.id === want) || LEVELS[0];
+      if (!Progress.isUnlocked(lv.id)) location.replace('index.html?locked=' + lv.id);
+    })();
+  </script>
   <script>
     // 依 levels.js 的 PALETTE 產生調色盤按鈕（必須在 script.js 之前執行）
     (function () {
@@ -72,5 +83,7 @@
     })();
   </script>
   <script src="script.js"></script>
+  <!-- 帳號登入與雲端同步（設定碼在 firebase-config.js） -->
+  <script type="module" src="cloud.js"></script>
 </body>
 </html>

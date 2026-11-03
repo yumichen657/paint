@@ -7,27 +7,54 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="menu-body">
+  <!-- 帳號列：內容由 cloud.js 產生 -->
+  <div id="account" class="account-bar" aria-live="polite"></div>
+
   <main class="menu-container">
     <h1>溢彩畫</h1>
-    <p>點選關卡開始</p>
+    <p id="menuHint">點選關卡開始</p>
+    <p id="lockedMsg" class="locked-msg" hidden></p>
     <div id="levelCards" class="levels"></div>
     <footer class="menu-footer">沒過關我都要哭了</footer>
   </main>
 
   <script src="levels.js"></script>
+  <script src="progress.js"></script>
   <script>
-    // 依 LEVELS 自動產生卡片
+    // 依 LEVELS 自動產生卡片；沒解鎖的關卡顯示鎖頭、不能點
     const wrap = document.getElementById('levelCards');
-    LEVELS.forEach(lv => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.onclick = () => location.href = `game.html?level=${lv.id}`;
-      card.innerHTML = `
-        <h3>${lv.title}</h3>
-        <p>${lv.subtitle || '過關自己買瓶飲料獎勵自己'}</p>
-      `;
-      wrap.appendChild(card);
-    });
+    const titleOf = id => (LEVELS.find(l => l.id === id) || {}).title || `第 ${id} 關`;
+
+    function renderCards() {
+      wrap.innerHTML = '';
+      LEVELS.forEach((lv, i) => {
+        const unlocked = Progress.isUnlocked(lv.id);
+        const done = Progress.isCleared(lv.id);
+        const card = document.createElement(unlocked ? 'a' : 'div');
+        card.className = 'card' + (unlocked ? '' : ' locked') + (done ? ' cleared' : '');
+        if (unlocked) card.href = `game.html?level=${lv.id}`;
+        else card.setAttribute('aria-disabled', 'true');
+        const status = done ? '<span class="badge done">✓ 已通關</span>'
+          : unlocked ? '' : `<span class="badge lock">🔒 先通過${titleOf(LEVELS[i - 1].id)}</span>`;
+        card.innerHTML = `<h3>${lv.title}</h3><p>${lv.subtitle || '過關自己買瓶飲料獎勵自己'}</p>${status}`;
+        wrap.appendChild(card);
+      });
+      const n = Progress.list().filter(id => LEVELS.some(l => l.id === id)).length;
+      document.getElementById('menuHint').textContent = n ? `已通過 ${n} / ${LEVELS.length} 關` : '點選關卡開始';
+    }
+    Progress.onChange(renderCards);
+    renderCards();
+
+    // 從遊戲頁被擋回來時，說明原因
+    const locked = parseInt(new URLSearchParams(location.search).get('locked'), 10);
+    if (locked) {
+      const i = LEVELS.findIndex(l => l.id === locked);
+      const msg = document.getElementById('lockedMsg');
+      msg.textContent = i > 0 ? `${titleOf(locked)}還沒解鎖，要先通過${titleOf(LEVELS[i - 1].id)}。` : '';
+      msg.hidden = !msg.textContent;
+    }
   </script>
+  <!-- 帳號登入與雲端同步（設定碼在 firebase-config.js） -->
+  <script type="module" src="cloud.js"></script>
 </body>
 </html>

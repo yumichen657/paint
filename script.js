@@ -484,6 +484,8 @@ function isWin() {
 
 function checkWinLose() {
   if (isWin()) {
+    // 記錄過關（會解鎖下一關；有登入的話也會同步到雲端）
+    if (window.Progress) Progress.markCleared(levelId);
     setTimeout(() => {
       const goNext = confirm(raw.winText || '恭喜過關！要前往下一關嗎？');
       if (goNext) {

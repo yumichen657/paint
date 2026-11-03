@@ -37,3 +37,41 @@ h1{margin:0 0 10px 0}
 .bottom-actions{display:flex;justify-content:center;gap:10px;margin:16px 0 6px}
 .soft-btn{padding:8px 12px;border-radius:8px;border:1px solid #e5e7eb;background:white;cursor:pointer;text-decoration:none;color:#111}
 .soft-btn:hover{background:#f3f4f6}
+
+/* ---- 關卡鎖定 ---- */
+a.card { color:inherit; text-decoration:none; display:block }
+.card.locked { cursor:not-allowed; opacity:.55; box-shadow:none; background:#ece8e1 }
+.card.locked:hover { transform:none }
+.card .badge { display:inline-block; margin-top:10px; font-size:13px; padding:2px 10px; border-radius:999px }
+.card .badge.done { background:#dff3e8; color:#1f7a4d }
+.card .badge.lock { background:transparent; color:#6b6457 }
+.locked-msg { background:#fff3cd; color:#7a5a00; border:1px solid #f0dc9a; border-radius:8px; padding:8px 14px; display:inline-block; margin:6px 0 0 }
+.locked-msg[hidden] { display:none }
+
+/* ---- 帳號 ---- */
+.account-bar { display:flex; justify-content:flex-end; align-items:center; gap:10px; flex-wrap:wrap; font-size:14px; min-height:34px; text-align:right }
+.account-bar[hidden] { display:none }
+.account-bar .who { color:#444 }
+.account-bar .who b { color:#222 }
+.account-bar .sync { color:#888; font-size:12.5px }
+.acct-btn { padding:7px 14px; border-radius:8px; border:1px solid #d9d3c7; background:white; cursor:pointer; font-size:14px; color:#222 }
+.acct-btn.primary { background:#2B5FA8; border-color:#2B5FA8; color:white }
+.acct-btn:hover { filter:brightness(.97) }
+.acct-dialog { position:fixed; inset:0; background:rgba(0,0,0,.45); display:flex; align-items:center; justify-content:center; z-index:40; padding:16px }
+.acct-dialog[hidden] { display:none }
+.acct-box { background:white; border-radius:14px; padding:22px; width:100%; max-width:360px; text-align:left; box-shadow:0 12px 28px rgba(12,12,24,.25) }
+.acct-box h2 { margin:0 0 4px; font-size:20px }
+.acct-box .tabs { display:flex; gap:6px; margin:10px 0 14px }
+.acct-box .tabs button { flex:1; padding:8px; border:1px solid #d9d3c7; background:#f7f5f1; border-radius:8px; cursor:pointer; font-size:15px }
+.acct-box .tabs button[aria-pressed="true"] { background:#2B5FA8; color:white; border-color:#2B5FA8 }
+.acct-box label { display:block; font-size:13px; color:#555; margin:10px 0 4px }
+.acct-box input { width:100%; padding:10px; border:1px solid #d9d3c7; border-radius:8px; font-size:16px }
+.acct-box .hint { font-size:12.5px; color:#888; margin-top:4px }
+.acct-box .err { color:#c0392b; font-size:14px; min-height:20px; margin-top:10px }
+.acct-box .row { display:flex; gap:8px; justify-content:flex-end; margin-top:12px }
+.game-body .account-bar { position:fixed; top:12px; right:70px; min-height:0 }
+@media (max-width:600px) {
+  .menu-body { padding:20px 16px }
+  .game-body .account-bar { display:none }
+  .account-bar .sync { order:2; flex-basis:100%; font-size:12px }
+}
