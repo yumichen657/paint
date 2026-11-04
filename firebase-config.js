@@ -1,5 +1,12 @@
 // ===== Firebase 設定碼 =====
-// 到 Firebase 主控台：專案設定 → 你的應用程式 → 網頁應用程式，把 firebaseConfig 那一段貼在下面的 { } 裡。
+// 來自 Firebase 主控台：專案設定 → 你的應用程式 → 網頁應用程式。
 // 這段設定碼不是密碼，放在網頁裡是正常的；資料的保護靠 Firestore 的「規則」。
-// 還沒貼之前（保持 null），遊戲照樣能玩，進度只會存在這台裝置上，也不會出現登入按鈕。
-export const firebaseConfig = null;
+// 改成 null 可以關掉帳號功能（遊戲照樣能玩，進度只存在這台裝置）。
+export const firebaseConfig = {
+  apiKey: 'AIzaSyB_vE26l-QIPKyKtk9OWT01UPez-izXSxE',
+  authDomain: 'paint-5a9bc.firebaseapp.com',
+  projectId: 'paint-5a9bc',
+  storageBucket: 'paint-5a9bc.firebasestorage.app',
+  messagingSenderId: '852566235063',
+  appId: '1:852566235063:web:204b5c568d7a63afa0fa32'
+};
