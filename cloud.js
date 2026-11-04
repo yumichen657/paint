@@ -73,13 +73,21 @@ function render(s) {
   if (s.state === 'loading') bar.innerHTML = '<span class="sync">帳號載入中…</span>';
   else if (s.state === 'offline') bar.innerHTML = '<span class="sync">無法連線到帳號服務，進度先存在這台裝置</span>';
   else if (s.state === 'guest') {
-    bar.innerHTML = `<span class="sync">登入後進度會存到雲端，換裝置也能接著玩</span>
-      <button type="button" class="acct-btn" data-open="login">登入</button>
-      <button type="button" class="acct-btn primary" data-open="signup">註冊</button>`;
+    bar.innerHTML = `<div class="acct-guest">
+        <div class="acct-actions">
+          <button type="button" class="acct-btn" data-open="login">登入</button>
+          <button type="button" class="acct-btn primary" data-open="signup">註冊</button>
+        </div>
+        <small class="acct-note">登入後進度會存到雲端，換裝置也能接著玩</small>
+      </div>`;
     bar.querySelectorAll('[data-open]').forEach(b => b.onclick = () => openDialog(b.dataset.open));
   } else if (s.state === 'user') {
-    bar.innerHTML = `<span class="who">👤 <b>${esc(s.name)}</b></span><span class="sync">${esc(s.sync || '')}</span>
-      <button type="button" class="acct-btn" id="logoutBtn">登出</button>`;
+    const initial = (s.name || '?').charAt(0).toUpperCase();
+    bar.innerHTML = `<div class="acct-user">
+        <span class="acct-avatar" aria-hidden="true">${esc(initial)}</span>
+        <span class="acct-who"><b>${esc(s.name)}</b><small class="${/無法|中/.test(s.sync || '') ? 'pending' : ''}">${esc(s.sync || '')}</small></span>
+        <button type="button" class="acct-btn" id="logoutBtn">登出</button>
+      </div>`;
     bar.querySelector('#logoutBtn').onclick = logout;
   }
 }
