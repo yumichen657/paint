@@ -53,6 +53,20 @@
     onChange(fn) { listeners.push(fn); }
   };
 
+  // ===== 作弊指令：解除前 n 關的封鎖 =====
+  // 用法：在瀏覽器按右鍵「檢查」→ Console（主控台）→ 輸入 unlock(10) 按 Enter
+  // 會把第 1～n 關標成已通過（第 n+1 關也會跟著解鎖）；有登入的話會一起存到帳號
+  window.unlock = window.解鎖 = function (n = 10) {
+    n = Math.floor(Number(n));
+    if (!(n > 0)) { console.log('用法：unlock(10) 解除前 10 關'); return; }
+    const ids = levelIds().slice(0, n).filter(id => !cleared.has(id));
+    ids.forEach(id => cleared.add(id));
+    save();
+    if (ids.length && cloudSave) cloudSave(ids).catch(() => {});
+    const total = Math.min(n, levelIds().length);
+    console.log(`已解除前 ${total} 關的封鎖` + (cloudSave ? '，並存到帳號。' : '。（沒有登入，只存在這台裝置）'));
+  };
+
   // 另一個分頁改了進度（例如在遊戲頁過關），選關頁也跟著更新
   window.addEventListener('storage', e => { if (e.key === KEY) { cleared = new Set(read()); save(); } });
 })();
