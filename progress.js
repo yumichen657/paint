@@ -56,9 +56,15 @@
   // ===== 作弊指令：解除前 n 關的封鎖 =====
   // 用法：在瀏覽器按右鍵「檢查」→ Console（主控台）→ 輸入 unlock(10) 按 Enter
   // 會把第 1～n 關標成已通過（第 n+1 關也會跟著解鎖）；有登入的話會一起存到帳號
+  // 最多只能解除前 UNLOCK_MAX 關，超過的部分要自己玩
+  const UNLOCK_MAX = 15;
   window.unlock = window.解鎖 = function (n = 10) {
     n = Math.floor(Number(n));
-    if (!(n > 0)) { console.log('用法：unlock(10) 解除前 10 關'); return; }
+    if (!(n > 0)) { console.log(`用法：unlock(10) 解除前 10 關（最多 ${UNLOCK_MAX} 關）`); return; }
+    if (n > UNLOCK_MAX) {
+      console.log(`最多只能解除前 ${UNLOCK_MAX} 關，已改成解除前 ${UNLOCK_MAX} 關。`);
+      n = UNLOCK_MAX;
+    }
     const ids = levelIds().slice(0, n).filter(id => !cleared.has(id));
     ids.forEach(id => cleared.add(id));
     save();
