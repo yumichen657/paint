@@ -457,7 +457,13 @@ paletteBtns.forEach(btn => {
 
 helpBtn?.addEventListener('click', () => tutorial.style.display = 'flex');
 tutorialOk?.addEventListener('click', () => tutorial.style.display = 'none');
-resetBtn?.addEventListener('click', resetLevel);
+// 玩家自己按重新開始、或失敗後選重試，都算一次「重新挑戰」
+function retryLevel() {
+  if (demoRunning) return;
+  if (window.Progress) Progress.addRetry(levelId);
+  resetLevel();
+}
+resetBtn?.addEventListener('click', retryLevel);
 
 // 有互動教學的關卡（第一關）一進來就開始教學；規則說明改成按「?」才打開
 window.addEventListener('load', () => {
@@ -505,7 +511,7 @@ function checkWinLose() {
 
   if (movesLeft <= 0) {
     setTimeout(() => {
-      if (confirm('步數用完，挑戰失敗。要重試嗎？')) resetLevel();
+      if (confirm('步數用完，挑戰失敗。要重試嗎？')) retryLevel();
     }, 80);
   }
 }

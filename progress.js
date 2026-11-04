@@ -20,6 +20,17 @@
   }
   const levelIds = () => (typeof LEVELS !== 'undefined' ? LEVELS.map(l => l.id) : []);
 
+  // 還沒上傳的重新挑戰次數：{ 關卡id: 次數 }
+  const KEY_RETRY = 'fullpaint-retries-pending-v1';
+  let retryUploader = null; // 登入後由 cloud.js 設定
+  let pendingRetries = (() => {
+    try { const o = JSON.parse(localStorage.getItem(KEY_RETRY) || '{}'); return o && typeof o === 'object' ? o : {}; }
+    catch (e) { return {}; }
+  })();
+  function savePending() {
+    try { localStorage.setItem(KEY_RETRY, JSON.stringify(pendingRetries)); } catch (e) {}
+  }
+
   window.Progress = {
     list: () => [...cleared].sort((a, b) => a - b),
     isCleared: id => cleared.has(id),
@@ -46,8 +57,28 @@
       return this.list();
     },
 
+    // ----- 重新挑戰次數 -----
+    // 每按一次「重新開始」或失敗後「重試」記一次。登入時上傳到帳號；沒登入先存在這台裝置，登入後補上傳。
+    addRetry(id) {
+      if (!Number.isFinite(id)) return;
+      pendingRetries[id] = (pendingRetries[id] || 0) + 1;
+      savePending();
+      this.flushRetries();
+    },
+    flushRetries() {
+      if (!retryUploader || !Object.keys(pendingRetries).length) return;
+      const batch = pendingRetries;
+      pendingRetries = {};
+      savePending();
+      retryUploader(batch).catch(() => {           // 上傳失敗就放回去，下次再試
+        for (const [k, v] of Object.entries(batch)) pendingRetries[k] = (pendingRetries[k] || 0) + v;
+        savePending();
+      });
+    },
+    setRetryUploader(fn) { retryUploader = fn; this.flushRetries(); },
+
     // 登出時清空這台裝置的進度，下一個人從頭開始
-    reset() { cleared = new Set(); save(); },
+    reset() { cleared = new Set(); save(); pendingRetries = {}; savePending(); },
 
     setCloud(fn) { cloudSave = fn; },
     onChange(fn) { listeners.push(fn); }

@@ -39,7 +39,7 @@ async function start() {
   db = S.getFirestore(app);
   F.onAuthStateChanged(auth, user => {
     if (user) onLogin(user);
-    else { Progress.setCloud(null); render({ state: 'guest' }); }
+    else { Progress.setCloud(null); Progress.setRetryUploader(null); render({ state: 'guest' }); }
   });
 }
 
@@ -61,6 +61,11 @@ async function onLogin(user) {
     Progress.setCloud(ids => S.setDoc(ref, { cleared: S.arrayUnion(...ids), updatedAt: S.serverTimestamp() }, { merge: true })
       .then(() => render({ state: 'user', name, sync: '進度已同步' }))
       .catch(() => render({ state: 'user', name, sync: '暫時無法同步，下次登入會補上' })));
+    // 重新挑戰次數：每關累加（retries.關卡id），沒登入時累積的也會在這裡補上傳
+    Progress.setRetryUploader(batch => S.setDoc(ref, {
+      retries: Object.fromEntries(Object.entries(batch).map(([id, n]) => [id, S.increment(n)])),
+      updatedAt: S.serverTimestamp()
+    }, { merge: true }));
     render({ state: 'user', name, sync: '進度已同步' });
   } catch (e) {
     render({ state: 'user', name, sync: '暫時無法同步，下次登入會補上' });
@@ -189,5 +194,6 @@ async function submit(e) {
 async function logout() {
   try { await F.signOut(auth); } catch (e) {}
   Progress.setCloud(null);
+  Progress.setRetryUploader(null);
   Progress.reset();   // 清掉這台裝置上的進度，下一個人從第一關開始
 }
