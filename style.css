@@ -86,3 +86,10 @@ a.card { color:inherit; text-decoration:none; display:block }
   .account-bar { margin-bottom:20px }
   .acct-note { font-size:12px }
 }
+/* 手機：標題不換行、右邊留位置給「?」按鈕，避免蓋住剩餘步數 */
+@media (max-width:520px){
+  .game-header{padding-right:52px;gap:10px}
+  .game-header h1{font-size:24px;white-space:nowrap}
+  .status{gap:10px;font-size:14px;flex-wrap:wrap}
+  .status>div{white-space:nowrap}
+}

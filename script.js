@@ -92,6 +92,10 @@ function validateLevels() {
       }
     }));
     if (!b.every(row => row.length === b[0].length)) console.warn(`第${l.id}關 每列長度不一致`);
+    (l.ice || []).forEach(([r, c, n]) => {
+      if (!b[r] || b[r][c] === undefined || b[r][c] === null) console.warn(`第${l.id}關 冰塊 (${r},${c}) 不在可染色的格子上`);
+      if (!(n >= 1)) console.warn(`第${l.id}關 冰塊 (${r},${c}) 層數要 ≥ 1`);
+    });
 
     if (l.goalBoard) {
       const g = l.goalBoard;
@@ -116,8 +120,16 @@ const levelConfig = {
   boardData: raw.boardData || buildBoardFromParams(raw),
   goalBoard: raw.goalBoard || null,         // 有 goalBoard 就是逆向解謎關
   target: raw.target || 'blue',
-  maxMoves: raw.maxMoves || 6
+  maxMoves: raw.maxMoves || 6,
+  ice: raw.ice || []                         // 冰塊格：[[列, 行, 層數], ...]
 };
+// 冰塊層數表（0 = 沒有冰）
+function buildIce() {
+  const g = levelConfig.boardData.map(row => row.map(() => 0));
+  levelConfig.ice.forEach(([r, c, n]) => { if (g[r] && g[r][c] !== undefined) g[r][c] = n; });
+  return g;
+}
+const hasIce = levelConfig.ice.length > 0;
 const isReverse = !!levelConfig.goalBoard;
 
 // ===== 逆向模式需要的樣式（直接注入，不用改 style.css）=====
@@ -140,6 +152,20 @@ const isReverse = !!levelConfig.goalBoard;
       #board .cell { transition: none; }
       #board .cell.pop { animation: none; }
     }
+    /* ---- 冰塊格 ---- */
+    #board .cell.ice { position: relative; cursor: not-allowed;
+      box-shadow: inset 0 0 0 3px rgba(255,255,255,.85); }
+    #board .cell.ice::before { content: ''; position: absolute; inset: 0; border-radius: inherit;
+      background: linear-gradient(135deg, rgba(240,250,255,.62) 0%, rgba(200,232,250,.38) 45%, rgba(240,250,255,.62) 100%);
+      backdrop-filter: none; }
+    #board .cell.ice::after { content: attr(data-ice); position: absolute; inset: 0; display: flex;
+      align-items: center; justify-content: center; font-weight: 800; font-size: calc(var(--cell, 44px) * .45);
+      color: #fff; text-shadow: 0 0 3px rgba(20,60,90,.9), 0 1px 2px rgba(20,60,90,.9); }
+    #board .cell.crack { animation: iceCrack .35s ease; }
+    #board .cell.thaw { animation: iceThaw .45s ease; }
+    @keyframes iceCrack { 0%,100% { transform: none; } 30% { transform: rotate(-6deg) scale(.92); } 60% { transform: rotate(5deg); } }
+    @keyframes iceThaw { 0% { transform: scale(1.18); filter: brightness(1.6); } 100% { transform: none; filter: none; } }
+    @media (prefers-reduced-motion: reduce) { #board .cell.crack, #board .cell.thaw { animation: none; } }
     .target-chip { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; margin-right: 4px; border: 1px solid rgba(0,0,0,.15); }
 
     /* ---- 互動教學 ---- */
@@ -216,6 +242,8 @@ if (isReverse) {
 
 // ===== 狀態 =====
 let boardData = JSON.parse(JSON.stringify(levelConfig.boardData));
+let iceData = buildIce();
+const isFrozen = (r, c) => iceData[r] && iceData[r][c] > 0;
 let currentColor = null;
 let movesLeft = levelConfig.maxMoves;
 let demoRunning = false;
@@ -229,6 +257,14 @@ if (isReverse) {
   targetLabelEl.innerHTML = `<span class="target-chip" style="background:${colorHex(levelConfig.target)}"></span>${COLOR_ZH[levelConfig.target] || levelConfig.target}`;
 }
 movesLeftEl.textContent = movesLeft;
+if (hasIce) {
+  const ol = tutorial && tutorial.querySelector('ol');
+  if (ol) {
+    const li = document.createElement('li');
+    li.innerHTML = '❄️ <b>冰塊格</b>：數字是冰的層數，結冰時不能點、也不算相連。每次染色，<b>緊貼被染區域</b>的冰塊會少 1 層，歸零就融化露出底下的顏色。冰全部融化才能過關。';
+    ol.appendChild(li);
+  }
+}
 
 // 依螢幕寬度自動縮放格子（最大 44px），手機上盤面不會超出畫面
 function applyGridCols() {
@@ -262,9 +298,14 @@ function renderBoard() {
         cell.classList.add('hole');
       } else {
         cell.style.backgroundColor = colorHex(color);
+        if (isFrozen(r, c)) { cell.classList.add('ice'); cell.dataset.ice = iceData[r][c]; }
         cell.addEventListener('click', () => onCellClick(r, c, cell));
       }
-      cell.addEventListener('animationend', e => { if (e.animationName === 'cellPop') cell.classList.remove('pop'); });
+      cell.addEventListener('animationend', e => {
+        if (e.animationName === 'cellPop') cell.classList.remove('pop');
+        if (e.animationName === 'iceCrack') cell.classList.remove('crack');
+        if (e.animationName === 'iceThaw') cell.classList.remove('thaw');
+      });
       boardEl.appendChild(cell);
       cellEls[r].push(cell);
     }
@@ -288,7 +329,7 @@ function paintAnimated(r, c, newColor) {
       for (const [dy, dx] of dirs) {
         const ny = y + dy, nx = x + dx, k = ny + ',' + nx;
         if (ny < 0 || nx < 0 || ny >= rows || nx >= cols || seen.has(k)) continue;
-        if (boardData[ny][nx] !== oldColor) continue;
+        if (boardData[ny][nx] !== oldColor || isFrozen(ny, nx)) continue;
         seen.add(k);
         nxt.push([ny, nx]);
       }
@@ -296,6 +337,17 @@ function paintAnimated(r, c, newColor) {
     frontier = nxt;
   }
   for (const layer of layers) for (const [y, x] of layer) boardData[y][x] = newColor;
+
+  // 冰塊：緊貼這次被染區域的冰，每塊少 1 層（同一塊一次最多少 1 層）
+  const hit = new Set();
+  for (const layer of layers) for (const [y, x] of layer) {
+    for (const [dy, dx] of dirs) {
+      const ny = y + dy, nx = x + dx;
+      if (isFrozen(ny, nx)) hit.add(ny + ',' + nx);
+    }
+  }
+  const iceHits = [...hit].map(k => k.split(',').map(Number));
+  iceHits.forEach(([y, x]) => iceData[y][x]--);
 
   if (reduceMotion) { renderBoard(); return Promise.resolve(); }
 
@@ -313,13 +365,30 @@ function paintAnimated(r, c, newColor) {
         el.classList.add('pop');
       }
     }, i * step));
-    setTimeout(res, (layers.length - 1) * step + 280);
+    const fillEnd = (layers.length - 1) * step + 280;
+    if (iceHits.length) setTimeout(() => {
+      if (gen !== animGen) return;
+      iceHits.forEach(([y, x]) => {
+        const el = cellEls[y] && cellEls[y][x];
+        if (!el) return;
+        const left = iceData[y][x];
+        el.classList.remove('crack', 'thaw');
+        void el.offsetWidth;
+        if (left > 0) { el.dataset.ice = left; el.classList.add('crack'); }
+        else { el.classList.remove('ice'); delete el.dataset.ice; el.classList.add('thaw'); }
+      });
+    }, fillEnd - 120);
+    setTimeout(res, fillEnd + (iceHits.length ? 260 : 0));
   });
 }
 
 async function onCellClick(r, c, cell) {
   if (demoRunning || animating) return;
   if (!guide.allowCell(r, c)) return;
+  if (isFrozen(r, c)) {           // 結冰的格子點不動
+    cell.classList.remove('crack'); void cell.offsetWidth; cell.classList.add('crack');
+    return;
+  }
   cell.classList.add('selected');
   setTimeout(() => cell.classList.remove('selected'), 150);
   if (!currentColor) return;
@@ -475,7 +544,7 @@ window.addEventListener('load', () => {
 function floodFill(r, c, oldColor, newColor) {
   if (r < 0 || r >= boardData.length || c < 0 || c >= boardData[0].length) return;
   if (boardData[r][c] === null) return;
-  if (boardData[r][c] !== oldColor) return;
+  if (boardData[r][c] !== oldColor || isFrozen(r, c)) return;
   boardData[r][c] = newColor;
   for (const [dr, dc] of dirs) floodFill(r + dr, c + dc, oldColor, newColor);
 }
@@ -485,6 +554,7 @@ function isWin() {
   if (isReverse) {
     return boardData.every((row, r) => row.every((cell, c) => cell === levelConfig.goalBoard[r][c]));
   }
+  if (iceData.some(row => row.some(n => n > 0))) return false; // 冰要全部融化
   return boardData.every(row => row.every(cell => cell === levelConfig.target || cell === null));
 }
 
@@ -521,6 +591,7 @@ function resetLevel() {
   animGen++;          // 取消還沒跑完的染色動畫
   animating = false;
   boardData = JSON.parse(JSON.stringify(levelConfig.boardData));
+  iceData = buildIce();
   movesLeft = levelConfig.maxMoves;
   movesLeftEl.textContent = movesLeft;
   currentColor = null;
@@ -536,16 +607,18 @@ runDemoBtn?.addEventListener('click', async () => {
   if (demoRunning || animating) return;
 
   const cells = [];
-  boardData.forEach((row, r) => row.forEach((v, c) => { if (v !== null) cells.push([r, c]); }));
+  boardData.forEach((row, r) => row.forEach((v, c) => { if (v !== null && !isFrozen(r, c)) cells.push([r, c]); }));
   if (cells.length === 0) return;
 
   demoRunning = true;
   const snapBoard = JSON.stringify(boardData);
+  const snapIce = JSON.stringify(iceData);
   const snapMoves = movesLeft;
   const steps = raw.demoClicks || 3;
 
   for (let i = 0; i < steps; i++) {
     const [r, c] = cells[Math.floor(Math.random() * cells.length)];
+    if (isFrozen(r, c)) continue;
     const oldColor = boardData[r][c];
     const options = COLORS.filter(x => x !== oldColor);
     if (options.length === 0) break;
@@ -556,6 +629,7 @@ runDemoBtn?.addEventListener('click', async () => {
 
   await new Promise(res => setTimeout(res, 600));
   boardData = JSON.parse(snapBoard);
+  iceData = JSON.parse(snapIce);
   movesLeft = snapMoves;
   movesLeftEl.textContent = movesLeft;
   renderBoard();

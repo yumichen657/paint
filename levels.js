@@ -524,5 +524,61 @@ const LEVELS = [
     ],
     target: 'green',
     maxMoves: 10
+  },
+  {
+    id: 32,
+    title: "第三十二關",
+    boardData: [
+      ['green','green','red','red','red','red'],
+      ['green','green','red','red','red','red'],
+      ['blue','green','red','red','red','blue'],
+      ['blue','red','red','green','green','blue'],
+      ['green','green','green','green','blue','blue'],
+      ['green','green','green','blue','blue','blue']
+    ],
+    // 冰塊格：[列, 行, 層數]（列、行從 0 開始數）
+    ice: [[0,5,1], [2,1,1], [5,3,1]],
+    target: 'green',
+    maxMoves: 4,
+    tutorial: [
+      { text: '新機制：<b>冰塊格</b> ❄️<br>白色霧面、上面有數字的格子被冰住了：<b>不能點</b>，也<b>不算跟旁邊相連</b>。', focus: 'board', wait: 'next' },
+      { text: '每染一次色，<b>緊貼著被染區域</b>的冰塊就少 1 層；數字歸零就融化，露出底下的顏色。', focus: 'board', wait: 'next' },
+      { text: '<b>冰全部融化</b>，而且整個畫板變成目標顏色才算過關。想想看先染哪裡！', focus: 'target', wait: 'next' }
+    ]
+  },
+  {
+    id: 33,
+    title: "第三十三關",
+    boardData: [
+      ['red','blue','blue','blue','blue','blue','blue'],
+      ['red','red','red','green','red','blue','green'],
+      ['red','yellow','red','red','red','red','blue'],
+      ['red','red','blue','red','yellow','red','green'],
+      ['yellow','red','blue','blue','red','blue','green'],
+      ['blue','blue','green','green','red','red','yellow'],
+      ['blue','red','green','green','red','green','green']
+    ],
+    // 冰塊格：[列, 行, 層數]（列、行從 0 開始數）
+    ice: [[2,2,2], [4,0,2], [5,5,1], [6,1,2], [6,2,1]],
+    target: 'blue',
+    maxMoves: 7
+  },
+  {
+    id: 34,
+    title: "第三十四關",
+    boardData: [
+      ['yellow','red','red', null ,'yellow','red','red','red'],
+      ['yellow','red','red','blue','blue','yellow','red', null ],
+      ['yellow','yellow','red','yellow','blue','blue','blue','red'],
+      ['yellow', null ,'green','green','blue','blue','red','yellow'],
+      ['yellow','blue','green','green', null ,'yellow','blue','yellow'],
+      ['yellow','yellow','yellow', null ,'blue','yellow','blue','yellow'],
+      ['yellow','yellow','yellow','blue','blue','blue', null ,'green'],
+      ['yellow','blue','blue','blue','blue','green','green','green']
+    ],
+    // 冰塊格：[列, 行, 層數]（列、行從 0 開始數）
+    ice: [[0,0,3], [2,1,1], [2,6,3], [3,0,1], [3,4,3], [6,0,1], [6,5,2]],
+    target: 'blue',
+    maxMoves: 7
   }
 ];
