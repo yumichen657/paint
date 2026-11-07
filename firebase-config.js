@@ -10,3 +10,7 @@ export const firebaseConfig = {
   messagingSenderId: '852566235063',
   appId: '1:852566235063:web:204b5c568d7a63afa0fa32'
 };
+
+// 管理員帳號名稱（小寫）：登入這些帳號會在選關頁看到「統計」按鈕，可以看所有玩家的通關和重開次數。
+// ⚠️ 真正擋住其他人看資料的是 Firebase 的「規則」，這裡改了之後規則也要一起改。
+export const ADMINS = ['aaaaaa'];

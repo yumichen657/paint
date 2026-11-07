@@ -1,7 +1,7 @@
 // ===== 帳號登入與雲端同步（Firebase）=====
 // 玩家用「帳號名稱＋密碼」註冊、登入；登入後過了哪幾關會存到雲端，換裝置登入也能接著玩。
 // 密碼由 Firebase 加密保管，這個程式不會、也看不到玩家的密碼。
-import { firebaseConfig } from './firebase-config.js';
+import { firebaseConfig, ADMINS } from './firebase-config.js';
 
 const SDK = 'https://www.gstatic.com/firebasejs/10.12.2';
 // Firebase 的帳號一定要是 email 格式，所以把帳號名稱接上一個固定的尾巴（不會真的寄信）
@@ -13,6 +13,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 
 let F = null, S = null, auth = null, db = null;
 let pendingName = '';   // 註冊時輸入的帳號名稱（保留大小寫）
+let currentUser = null;  // 目前登入的玩家
 
 if (!firebaseConfig || !window.Progress) {
   if (bar) bar.hidden = true;          // 還沒設定 Firebase：只用本機進度
@@ -38,11 +39,13 @@ async function start() {
   auth = F.getAuth(app);
   db = S.getFirestore(app);
   F.onAuthStateChanged(auth, user => {
+    currentUser = user;
     if (user) onLogin(user);
     else { Progress.setCloud(null); Progress.setRetryUploader(null); render({ state: 'guest' }); }
   });
 }
 
+const isAdmin = user => !!user && (ADMINS || []).some(a => user.email === `${a.toLowerCase()}@${EMAIL_DOMAIN}`);
 const nameOf = user => user.displayName || pendingName || (user.email || '').split('@')[0];
 
 // ---------- 登入後：合併本機和雲端的進度 ----------
@@ -91,6 +94,7 @@ function render(s) {
     bar.innerHTML = `<div class="acct-user">
         <span class="acct-avatar" aria-hidden="true">${esc(initial)}</span>
         <span class="acct-who"><b>${esc(s.name)}</b><small class="${/無法|中/.test(s.sync || '') ? 'pending' : ''}">${esc(s.sync || '')}</small></span>
+        ${isAdmin(currentUser) ? '<a class="acct-btn" href="stats.html">📊 統計</a>' : ''}
         <button type="button" class="acct-btn" id="logoutBtn">登出</button>
       </div>`;
     bar.querySelector('#logoutBtn').onclick = logout;

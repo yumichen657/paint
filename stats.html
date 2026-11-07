@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>溢彩畫｜玩家統計</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .stats-body { font-family: Arial, Helvetica, sans-serif; background: var(--bg); margin: 0; padding: 24px 16px 48px; color: #222; }
+    .wrap { max-width: 900px; margin: 0 auto; }
+    .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .top h1 { margin: 0; font-size: 26px; }
+    .top .acct-btn { text-decoration: none; }
+    .msg { background: white; border-radius: 12px; padding: 18px; margin-top: 20px; color: #555; box-shadow: 0 4px 14px rgba(30,30,60,.06); }
+    .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
+    .tile { background: white; border-radius: 12px; padding: 14px; box-shadow: 0 4px 14px rgba(30,30,60,.06); }
+    .tile b { display: block; font-size: 26px; }
+    .tile span { font-size: 13px; color: #777; }
+    h2 { font-size: 18px; margin: 28px 0 10px; }
+    .hint { font-size: 13px; color: #888; margin: -4px 0 10px; }
+    .tbl-wrap { overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 4px 14px rgba(30,30,60,.06); }
+    table { border-collapse: collapse; width: 100%; font-size: 14px; }
+    th, td { padding: 9px 12px; text-align: right; white-space: nowrap; border-bottom: 1px solid #f0ece4; }
+    th:first-child, td:first-child { text-align: left; }
+    th { background: #faf8f4; font-weight: 600; color: #555; position: sticky; top: 0; cursor: pointer; user-select: none; }
+    th[aria-sort="descending"]::after { content: ' ▼'; font-size: 10px; }
+    th[aria-sort="ascending"]::after { content: ' ▲'; font-size: 10px; }
+    tr:last-child td { border-bottom: none; }
+    .bar { display: inline-block; height: 8px; border-radius: 4px; background: #E04B3A; vertical-align: middle; margin-right: 6px; }
+    .zero { color: #bbb; }
+    .player { background: white; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; box-shadow: 0 4px 14px rgba(30,30,60,.06); }
+    .player-head { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .player-head b { font-size: 16px; }
+    .player-head span { color: #666; font-size: 13px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .chip { font-size: 12.5px; padding: 3px 9px; border-radius: 999px; background: #f4f1ec; color: #444; }
+    .chip.hot { background: #fde3df; color: #a8321f; }
+    .none { font-size: 13px; color: #999; margin-top: 8px; }
+    @media (max-width: 520px) { th, td { padding: 9px 7px; font-size: 13px; } th { white-space: normal; } .bar { display: none; } .tiles { grid-template-columns: 1fr 1fr 1fr; gap: 8px; } .tile b { font-size: 21px; } }
+  </style>
+</head>
+<body class="stats-body">
+  <div class="wrap">
+    <div class="top">
+      <h1>📊 玩家統計</h1>
+      <div>
+        <button type="button" class="acct-btn" id="refresh" hidden>重新整理</button>
+        <a class="acct-btn" href="index.html">返回選關</a>
+      </div>
+    </div>
+    <div id="msg" class="msg">載入中…</div>
+    <div id="out" hidden>
+      <div class="tiles">
+        <div class="tile"><b id="tPlayers">0</b><span>位玩家</span></div>
+        <div class="tile"><b id="tRetries">0</b><span>次重開（全部加起來）</span></div>
+        <div class="tile"><b id="tHard">—</b><span>重開最多次的關卡</span></div>
+      </div>
+
+      <h2>每一關</h2>
+      <p class="hint">「平均重開」＝這關總重開次數 ÷ 過關人數，越高代表越難。點表頭可以排序。</p>
+      <div class="tbl-wrap"><table id="levelTbl"></table></div>
+
+      <h2>每位玩家</h2>
+      <p class="hint">紅色標籤是這位玩家重開最多次的關卡。</p>
+      <div id="players"></div>
+    </div>
+  </div>
+
+  <script src="levels.js"></script>
+  <script type="module">
+    // 只有管理員帳號能看到資料：真正的保護是 Firebase 規則，不是這個頁面
+    import { firebaseConfig, ADMINS } from './firebase-config.js';
+    const SDK = 'https://www.gstatic.com/firebasejs/10.12.2';
+    const EMAIL_DOMAIN = 'users.fullpaint.vercel.app';
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const say = html => { $('msg').innerHTML = html; $('msg').hidden = false; $('out').hidden = true; };
+    const titleOf = id => (LEVELS.find(l => l.id === id) || {}).title || `第 ${id} 關`;
+
+    let F, S, auth, db;
+    try {
+      const [A, F_, S_] = await Promise.all([
+        import(`${SDK}/firebase-app.js`), import(`${SDK}/firebase-auth.js`), import(`${SDK}/firebase-firestore.js`)
+      ]);
+      F = F_; S = S_;
+      const app = A.initializeApp(firebaseConfig);
+      auth = F.getAuth(app); db = S.getFirestore(app);
+    } catch (e) {
+      say('無法連線到 Firebase，請檢查網路後重新整理。');
+    }
+
+    if (auth) F.onAuthStateChanged(auth, user => {
+      const admin = user && ADMINS.some(a => user.email === `${a.toLowerCase()}@${EMAIL_DOMAIN}`);
+      if (!user) return say('請先回到<a href="index.html">選關頁</a>，用管理員帳號登入。');
+      if (!admin) return say('這個帳號沒有看統計的權限。');
+      $('refresh').hidden = false;
+      load();
+    });
+    $('refresh').onclick = () => load();
+
+    async function load() {
+      say('讀取玩家資料中…');
+      let snap;
+      try {
+        snap = await S.getDocs(S.collection(db, 'progress'));
+      } catch (e) {
+        if (e && e.code === 'permission-denied') {
+          return say('Firebase 拒絕讀取所有玩家的資料。<br>請到 Firebase → Firestore → <b>規則</b>，確認已經加上管理員那一行並按「發布」。');
+        }
+        return say('讀取失敗：' + esc(e && (e.code || e.message)));
+      }
+      const players = snap.docs.map(d => {
+        const v = d.data();
+        const retries = {};
+        Object.entries(v.retries || {}).forEach(([k, n]) => { if (n > 0) retries[+k] = n; });
+        return {
+          name: v.username || '(沒有名稱)',
+          cleared: Array.isArray(v.cleared) ? v.cleared.filter(Number.isFinite) : [],
+          retries,
+          total: Object.values(retries).reduce((a, b) => a + b, 0),
+          updated: v.updatedAt && v.updatedAt.toDate ? v.updatedAt.toDate() : null
+        };
+      });
+      render(players);
+    }
+
+    // ----- 每一關的表格（可排序）-----
+    let rows = [], sortKey = 'id', sortDir = 1;
+    const COLS = [
+      ['id', '關卡'], ['total', '總重開'], ['players', '重開過的人'], ['cleared', '過關人數'], ['avg', '平均重開']
+    ];
+
+    function render(players) {
+      $('msg').hidden = true; $('out').hidden = false;
+      $('tPlayers').textContent = players.length;
+      $('tRetries').textContent = players.reduce((a, p) => a + p.total, 0);
+
+      rows = LEVELS.map(l => {
+        const total = players.reduce((a, p) => a + (p.retries[l.id] || 0), 0);
+        const who = players.filter(p => p.retries[l.id]).length;
+        const cleared = players.filter(p => p.cleared.includes(l.id)).length;
+        return { id: l.id, total, players: who, cleared, avg: cleared ? total / cleared : (total ? Infinity : 0) };
+      });
+      const hard = [...rows].sort((a, b) => b.total - a.total)[0];
+      $('tHard').textContent = hard && hard.total ? titleOf(hard.id) : '—';
+      drawTable();
+
+      const list = [...players].sort((a, b) => b.cleared.length - a.cleared.length || b.total - a.total);
+      $('players').innerHTML = list.length ? list.map(p => {
+        const ent = Object.entries(p.retries).map(([k, n]) => [+k, n]).sort((a, b) => a[0] - b[0]);
+        const max = Math.max(0, ...ent.map(e => e[1]));
+        const last = p.updated ? `・最後遊玩 ${p.updated.toLocaleString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}` : '';
+        return `<div class="player">
+          <div class="player-head"><b>${esc(p.name)}</b>
+            <span>過關 ${p.cleared.length} / ${LEVELS.length}・重開 ${p.total} 次${last}</span></div>
+          ${ent.length ? `<div class="chips">${ent.map(([id, n]) =>
+              `<span class="chip${n === max && max > 1 ? ' hot' : ''}">${esc(titleOf(id))} ${n} 次</span>`).join('')}</div>`
+            : '<div class="none">還沒有重開紀錄</div>'}
+        </div>`;
+      }).join('') : '<div class="msg">還沒有玩家登入過。</div>';
+    }
+
+    function drawTable() {
+      const sorted = [...rows].sort((a, b) => (a[sortKey] - b[sortKey]) * sortDir || a.id - b.id);
+      const maxTotal = Math.max(1, ...rows.map(r => r.total));
+      const tbl = $('levelTbl');
+      tbl.innerHTML = `<thead><tr>${COLS.map(([k, t]) =>
+          `<th data-k="${k}" ${k === sortKey ? `aria-sort="${sortDir > 0 ? 'ascending' : 'descending'}"` : ''}>${t}</th>`).join('')}</tr></thead>
+        <tbody>${sorted.map(r => `<tr>
+          <td>${esc(titleOf(r.id))}</td>
+          <td class="${r.total ? '' : 'zero'}"><span class="bar" style="width:${Math.round(r.total / maxTotal * 60)}px"></span>${r.total}</td>
+          <td class="${r.players ? '' : 'zero'}">${r.players}</td>
+          <td class="${r.cleared ? '' : 'zero'}">${r.cleared}</td>
+          <td class="${r.avg ? '' : 'zero'}">${r.avg === Infinity ? '沒人過' : r.avg.toFixed(1)}</td>
+        </tr>`).join('')}</tbody>`;
+      tbl.querySelectorAll('th').forEach(th => th.onclick = () => {
+        const k = th.dataset.k;
+        if (k === sortKey) sortDir = -sortDir; else { sortKey = k; sortDir = k === 'id' ? 1 : -1; }
+        drawTable();
+      });
+    }
+  </script>
+</body>
+</html>
