@@ -169,7 +169,7 @@ const LEVELS = [
       ['red','red','red','red','red','blue','red','blue','red','blue']
     ],
     target: 'red',
-    maxMoves: 4
+    maxMoves: 3
   },
   {
     id: 10,
