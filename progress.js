@@ -31,12 +31,17 @@
     try { localStorage.setItem(KEY_RETRY, JSON.stringify(pendingRetries)); } catch (e) {}
   }
 
+  // 管理員帳號（firebase-config.js 的 ADMINS）登入後，全部關卡直接解鎖（不會標成已通關）
+  const KEY_ADMIN = 'fullpaint-admin-v1';
+  let adminAll = (() => { try { return localStorage.getItem(KEY_ADMIN) === '1'; } catch (e) { return false; } })();
+
   window.Progress = {
     list: () => [...cleared].sort((a, b) => a - b),
     isCleared: id => cleared.has(id),
 
     // 第一關永遠開放；之後要過了前一關（或自己已經過過）才開放
     isUnlocked(id) {
+      if (adminAll) return true;
       const ids = levelIds();
       const i = ids.indexOf(id);
       if (i <= 0) return true;
@@ -78,7 +83,15 @@
     setRetryUploader(fn) { retryUploader = fn; this.flushRetries(); },
 
     // 登出時清空這台裝置的進度，下一個人從頭開始
-    reset() { cleared = new Set(); save(); pendingRetries = {}; savePending(); },
+    reset() { cleared = new Set(); pendingRetries = {}; savePending(); this.setAdmin(false); },
+
+    // 由 cloud.js 在登入／登出時設定
+    setAdmin(on) {
+      adminAll = !!on;
+      try { on ? localStorage.setItem(KEY_ADMIN, '1') : localStorage.removeItem(KEY_ADMIN); } catch (e) {}
+      save();
+    },
+    isAdmin: () => adminAll,
 
     setCloud(fn) { cloudSave = fn; },
     onChange(fn) { listeners.push(fn); }

@@ -40,8 +40,8 @@ async function start() {
   db = S.getFirestore(app);
   F.onAuthStateChanged(auth, user => {
     currentUser = user;
-    if (user) onLogin(user);
-    else { Progress.setCloud(null); Progress.setRetryUploader(null); render({ state: 'guest' }); }
+    if (user) { Progress.setAdmin(isAdmin(user)); onLogin(user); }
+    else { Progress.setCloud(null); Progress.setRetryUploader(null); Progress.setAdmin(false); render({ state: 'guest' }); }
   });
 }
 
